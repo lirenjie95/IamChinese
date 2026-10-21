@@ -1,0 +1,73 @@
+{
+  "name": "dsh-cn-persona",
+  "version": "0.1.0",
+  "description": "Treat the session as a mainland-China user: consistent persona (ID region code, phone prefix, carrier ASN, locale, time zone), a landing checklist and a self-check, plus one command that packages it for a friend.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./core": "./lib/core/persona.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "cn-persona": "bin/cn-persona.mjs"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "hooks",
+    "skills",
+    "commands",
+    ".claude-plugin",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "scripts/share-server.mjs",
+    "scripts/share-qr.mjs",
+    "scripts/lib/qr.js"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "claude-code-plugin",
+    "persona",
+    "locale",
+    "i18n",
+    "china",
+    "chinese",
+    "zh-cn",
+    "test-fixture"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "cli": "node bin/cn-persona.mjs",
+    "dist": "node scripts/dist.mjs",
+    "smoke": "node scripts/smoke-claude.mjs",
+    "share": "node scripts/share-server.mjs",
+    "qr": "node scripts/share-qr.mjs"
+  },
+  "license": "MIT",
+  "author": "YG",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lirenjie95/IamChinese.git",
+    "directory": "plugin"
+  },
+  "homepage": "https://github.com/lirenjie95/IamChinese/tree/main/plugin#readme",
+  "bugs": {
+    "url": "https://github.com/lirenjie95/IamChinese/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
