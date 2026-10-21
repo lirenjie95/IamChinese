@@ -1,0 +1,16 @@
+{
+  "description": "会话开始时声明用户在中国大陆、用简体中文，只读地影响措辞，不改任何系统设置或工具行为",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/china-context.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
