@@ -9,7 +9,7 @@
  * 地址换成你的域名即可——`--url` 参数就是干这个的。
  */
 import { createServer } from 'node:http'
-import { createReadStream } from 'node:fs'
+import { createReadStream, existsSync } from 'node:fs'
 import { readFile, readdir, stat } from 'node:fs/promises'
 import { networkInterfaces } from 'node:os'
 import { extname, join, resolve } from 'node:path'
@@ -49,7 +49,7 @@ const escapeHtml = value =>
   String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
 
 /** 分发页本体。二维码单独走 /qr.png，所以这里只引用它。 */
-export function landingPage({ baseUrl, files }) {
+export function landingPage({ baseUrl, files, brand = { logo: null, icon: null } }) {
   const items = files
     .map(
       file => `<li>
@@ -61,11 +61,16 @@ export function landingPage({ baseUrl, files }) {
     )
     .join('\n')
 
+  // 没打包进 logo 时页面照样能用，只是头图位置空着
+  const mark = brand.logo ? '<img class="mark" src="/logo.png" alt="cn-persona" width="76" height="76">' : ''
+  const icon = brand.icon ? '<link rel="icon" href="/favicon.ico">' : ''
+
   return `<!doctype html>
 <html lang="zh-CN">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cn-persona · 装到自己的机器上</title>
+${icon}
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -74,6 +79,8 @@ export function landingPage({ baseUrl, files }) {
     font: 16px/1.7 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
     max-width: 720px; margin-inline: auto;
   }
+  header { display: flex; gap: 16px; align-items: center; margin: 0 0 14px; }
+  .mark { border-radius: 50%; flex: 0 0 auto; }
   h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: .5px; }
   h2 { font-size: 17px; margin: 34px 0 10px; color: #ffd9a0; }
   p.lead { color: #b9ada0; margin: 0 0 22px; }
@@ -95,7 +102,13 @@ export function landingPage({ baseUrl, files }) {
   .warn { border-left: 3px solid #c9603a; padding-left: 12px; color: #d9c9bd; }
   footer { margin-top: 40px; color: #7d7469; font-size: 13px; }
 </style>
-<h1>cn-persona</h1>
+<header>
+  ${mark}
+  <div>
+    <h1>cn-persona</h1>
+    <div style="color:#8d8377;font-size:13px">我爱国无罪 · IamChinese</div>
+  </div>
+</header>
 <p class="lead">把开发/测试机配成「中国用户」口径的一套小工具：自洽的人设、落地清单、可发给别人的分享包。</p>
 
 <div class="card qr">
@@ -172,6 +185,19 @@ async function resolveDefaultDir() {
   return resolve(HERE, '..')
 }
 
+/** 头图与站点图标：先在投放目录里找，再退到仓库根的 assets/（装成插件时那层可能不存在）。 */
+function findBrand(dir) {
+  const roots = [dir, resolve(HERE, '..', '..', 'assets'), resolve(HERE, '..', 'assets')]
+  const pick = name => {
+    for (const root of roots) {
+      const candidate = join(root, name)
+      if (existsSync(candidate)) return candidate
+    }
+    return null
+  }
+  return { logo: pick('logo.png'), icon: pick('favicon.ico') }
+}
+
 /**
  * 起服务。返回的 close() 会等所有连接结束。
  *
@@ -185,6 +211,7 @@ export async function startShareServer(options = {}) {
   const autoBase = `http://${addresses[0]?.address ?? '127.0.0.1'}:${port}/`
   const baseUrl = options.baseUrl ?? autoBase
   const files = await listFiles(dir)
+  const brand = findBrand(dir)
 
   if (files.length === 0) {
     throw new Error(`${dir} 里没有可发的文件：先跑 npm run dist，或用 --dir 指向放包的那个目录`)
@@ -203,10 +230,23 @@ export async function startShareServer(options = {}) {
     const path = decodeURIComponent(url.pathname)
 
     if (path === '/' || path === '/index.html') {
-      const html = landingPage({ baseUrl, files })
+      const html = landingPage({ baseUrl, files, brand })
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
       res.end(html)
       return
+    }
+
+    // 头图与站点图标：直接从磁盘读，不进下载白名单
+    if (path === '/logo.png' || path === '/favicon.ico') {
+      const target = path === '/logo.png' ? brand.logo : brand.icon
+      if (target) {
+        res.writeHead(200, {
+          'Content-Type': path === '/logo.png' ? 'image/png' : 'image/x-icon',
+          'Cache-Control': 'no-cache',
+        })
+        createReadStream(target).pipe(res)
+        return
+      }
     }
 
     if (path === '/qr.png') {

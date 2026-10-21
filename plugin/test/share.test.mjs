@@ -41,6 +41,43 @@ test('页面把文件名转义，不拼进 HTML', () => {
   assert.match(html, /&lt;img onerror/)
 })
 
+test('有 logo 时页面挂头图与站点图标，没有就不挂', () => {
+  const files = [{ name: 'dsh-cn-persona-0.1.0.tgz', size: 1 }]
+  const withBrand = landingPage({ baseUrl: 'http://a/', files, brand: { logo: '/x/logo.png', icon: '/x/favicon.ico' } })
+  assert.match(withBrand, /<img class="mark" src="\/logo\.png"/)
+  assert.match(withBrand, /<link rel="icon" href="\/favicon\.ico">/)
+  assert.match(withBrand, /我爱国无罪/)
+
+  const bare = landingPage({ baseUrl: 'http://a/', files })
+  assert.doesNotMatch(bare, /class="mark"/)
+  assert.doesNotMatch(bare, /rel="icon"/)
+})
+
+test('投放目录里的 logo.png / favicon.ico 能取到，且不进下载列表', async () => {
+  const dir = await fakeDist()
+  await writeFile(join(dir, 'logo.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+  await writeFile(join(dir, 'favicon.ico'), Buffer.from([0, 0, 1, 0]))
+
+  const started = await startShareServer({ port: 0, dir })
+  try {
+    const page = await fetch(started.baseUrl)
+    assert.match(await page.text(), /class="mark"/)
+
+    const logo = await fetch(new URL('logo.png', started.baseUrl))
+    assert.equal(logo.status, 200)
+    assert.equal(logo.headers.get('content-type'), 'image/png')
+
+    const icon = await fetch(new URL('favicon.ico', started.baseUrl))
+    assert.equal(icon.status, 200)
+
+    // 头图不是发给别人的文件，不该出现在下载列表里
+    assert.equal(started.files.some(file => file.name === 'logo.png'), false)
+  } finally {
+    await started.close()
+    await rm(dir, { recursive: true, force: true })
+  }
+})
+
 test('起服务：首页 200、包能下、qr.png 是 PNG、别的路径 404', async () => {
   const dir = await fakeDist()
   const started = await startShareServer({ port: 0, dir })

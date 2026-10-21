@@ -281,6 +281,7 @@ assets/                  finished logo files (no source image, no generator)
 ├── logo.png             512×512 primary logo
 ├── logo-mark.png        532×532 transparent roundel (works on light and dark)
 ├── logo-horizontal.png  1200×360 banner, used at the top of this file
+├── social-preview.png   1280×640 social preview (repo Settings → Social preview)
 ├── qr-repo.png          QR code pointing at this repository
 └── favicon.ico          16/24/32/48/64/128, whole face mosaicked, no caption
 
@@ -289,6 +290,11 @@ assets/                  finished logo files (no source image, no generator)
 > icon is mosaicked across the whole face — 16px has no room for features, and none for a
 > caption. Only the rendered files are in the repository; the source image and the script
 > that produced them are not.
+>
+> `social-preview.png` has to be uploaded by hand: GitHub exposes no API for the social
+> preview, so it goes in through Settings → Social preview. Everywhere else the logo carries
+> itself — README banner, share page header and favicon, release notes, and `assets/` inside
+> the npm package.
 
 plugin/                  JS port: one DSH plugin and one Claude Code plugin, same logic
 ├── lib/core/            pure logic (persona, tables, PRNG, environment, profile), no IO

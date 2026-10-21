@@ -258,12 +258,17 @@ assets/                  打好的成品 logo（不含源图，也不含生成�
 ├── logo.png             512×512 主 logo
 ├── logo-mark.png        532×532 透明圆章（深色/浅色底都能放）
 ├── logo-horizontal.png  1200×360 横版，README 头图
+├── social-preview.png   1280×640 社交预览图（仓库 Settings → Social preview 用）
 ├── qr-repo.png          指向本仓库的二维码
 └── favicon.ico          16/24/32/48/64/128 多尺寸，整张脸打码、不放题字
 
 > logo 借的是一张流传很广的梗图，眼部做了马赛克：梗还认得出，但不再是一张清晰人像
 > 跟着仓库到处传。ico 整张脸都打码——16px 里塞不下五官，也没地方放题字。仓库里只留
 > 打好的成品，源图和生成它的脚本都不收进来。
+>
+> `social-preview.png` 得手动上传：GitHub 没有给社交预览留 API，只能进
+> Settings → Social preview 传这张图。除此之外它能到的地方都自己带上了——README 头图、
+> 分发页头图与站点图标、Release 正文、npm 包里的 `assets/`。
 
 plugin/                  JS 版：DSH 插件 + Claude 插件，同一份逻辑两个外壳
 ├── lib/core/            纯逻辑（人设、静态表、PRNG、环境、档案），无 IO

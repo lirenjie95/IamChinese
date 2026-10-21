@@ -18,6 +18,7 @@
     "hooks",
     "skills",
     "commands",
+    "assets",
     ".claude-plugin",
     "cordis.patch.yml",
     "README.md",

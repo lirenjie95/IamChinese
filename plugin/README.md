@@ -1,5 +1,9 @@
 # dsh-cn-persona
 
+<p align="center">
+  <img src="assets/logo.png" width="132" alt="cn-persona">
+</p>
+
 把开发/测试环境配成一套**内部自洽**的中国用户人设：姓名、身份证（含校验位）、手机号（号段绑定运营商与 ASN）、真实区划码对应的地址、locale、时区、书写约定，加上落地清单、自检和分享包。
 
 一份包，两个身份：
