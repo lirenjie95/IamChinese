@@ -62,13 +62,14 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lirenjie95/IamChinese.git",
-    "directory": "plugin"
+    "directory": "plugins/cn-persona"
   },
-  "homepage": "https://github.com/lirenjie95/IamChinese/tree/main/plugin#readme",
+  "homepage": "https://github.com/lirenjie95/IamChinese/tree/main/plugins/cn-persona#readme",
   "bugs": {
     "url": "https://github.com/lirenjie95/IamChinese/issues"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
