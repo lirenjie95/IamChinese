@@ -48,6 +48,10 @@ gh repo edit lirenjie95/IamChinese --add-topic dsh-plugin --add-topic claude-cod
 claude plugin validate .
 ```
 
+官方目录不收 PR：`anthropics/claude-plugins-community` 是只读镜像，直接提的 PR 会被自动关掉，入口只有表单
+<https://clau.de/plugin-directory-submission>（claude.ai 账号登录 → 自动安全扫描 → 人工审核 → 夜间同步）。
+表单要填的每一项、以及安全扫描会问的三个问题，已经写好放在 [`claude-submission.md`](claude-submission.md)。
+
 ## 三、GitHub Release（两边的分发件）
 
 `npm run dist` 产出的东西直接当 release 资产：
