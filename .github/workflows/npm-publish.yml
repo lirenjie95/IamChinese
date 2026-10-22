@@ -1,0 +1,55 @@
+name: npm publish
+
+# 本机发不出去时走这条：runner 只碰 registry.npmjs.org 的 API，
+# 不经过 www.npmjs.com 的 Cloudflare 挑战页。
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 检查 NPM_TOKEN 是否就位
+        id: guard
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::warning::仓库没有配 secret NPM_TOKEN，本次只跑测试不发布"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 测试
+        working-directory: plugins/cn-persona
+        run: npm test
+
+      - name: 核对版本号与 tag
+        if: steps.guard.outputs.publish == 'true' && startsWith(github.ref, 'refs/tags/')
+        working-directory: plugins/cn-persona
+        run: |
+          pkg=$(node -p "require('./package.json').version")
+          tag=${GITHUB_REF_NAME#v}
+          echo "package.json=$pkg tag=$tag"
+          if [ "$pkg" != "$tag" ]; then
+            echo "::error::package.json 版本 $pkg 与 tag $tag 不一致，先改版本号再发"
+            exit 1
+          fi
+
+      - name: 发布
+        if: steps.guard.outputs.publish == 'true'
+        working-directory: plugins/cn-persona
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --registry https://registry.npmjs.org/ --access public

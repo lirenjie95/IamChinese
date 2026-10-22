@@ -68,6 +68,27 @@ gh release create v0.1.0 `
   --title "v0.1.0" --notes-file marketplace/release-notes.md
 ```
 
+## 四、npm（可选；国内网络下最容易卡的一步）
+
+`plugins/cn-persona/package.json` 里 `publishConfig` 已经钉死官方源
+（`registry: https://registry.npmjs.org/`、`access: public`），所以本机全局 registry 指向淘宝镜像也能发。
+卡人的地方全在“拿登录态”：
+
+1. **注册只能网页**：`registry.npmjs.org` 的 `/-/user/...` 接口不接受自助注册（实测 PUT 返回
+   `401 username or password was invalid`），账号必须在 `www.npmjs.com/signup` 建。而该站对机房 IP
+   一律返回 `403 cf-mitigated: challenge`，云主机节点会无限转圈——用家宽或手机热点。
+2. **登录不必过网页**：`npm login --auth-type=legacy`（npm 11 支持）直接对 registry 做 CouchDB 认证，
+   不碰 `www.npmjs.com` 的挑战页。
+3. **本机死活过不去就交给 CI**：[`.github/workflows/npm-publish.yml`](../.github/workflows/npm-publish.yml)
+   在推 `v*` tag 时发布，runner 走 registry API，没有挑战页。先在网页建一个 Granular Access Token
+   （publish 权限 + bypass 2FA），存成仓库 secret `NPM_TOKEN`；没配 secret 时这条流水线只跑测试、跳过发布。
+
+```powershell
+npm publish --registry https://registry.npmjs.org/ --access public
+```
+
+发完之后不用改 `data/plugins/*.yml`——`npm:` 字段由市场从 registry 自动采集。
+
 ## 已知的坑
 
 - 别在 yml 里手写 `npm:` 字段 —— 会被校验拒绝，npm 映射由他们从 registry 自动采集。
