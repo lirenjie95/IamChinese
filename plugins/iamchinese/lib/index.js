@@ -9,7 +9,7 @@
 
 import { mountCnPersona } from './mount.js'
 import { CN_TOOL_NAMES } from './tools.js'
-import { CN_PERSONA_SKILL_NAME } from './skill.js'
+import { IAMCHINESE_SKILL_NAME } from './skill.js'
 
 export const name = 'iamchinese'
 
@@ -23,7 +23,7 @@ export const inject = ['tools']
  */
 export function apply(ctx) {
   const dispose = mountCnPersona(ctx)
-  ctx.logger?.info?.(`iamchinese 已挂载：身份段 + skill ${CN_PERSONA_SKILL_NAME} + ${CN_TOOL_NAMES.join(' + ')}`)
+  ctx.logger?.info?.(`iamchinese 已挂载：身份段 + skill ${IAMCHINESE_SKILL_NAME} + ${CN_TOOL_NAMES.join(' + ')}`)
   return dispose
 }
 
@@ -37,10 +37,10 @@ export {
 } from './prompt.js'
 export { CN_TOOL_NAMES, createCnTools } from './tools.js'
 export {
-  CN_PERSONA_SKILL_CONTENT,
-  CN_PERSONA_SKILL_DESCRIPTION,
-  CN_PERSONA_SKILL_NAME,
-  CN_PERSONA_SKILL_WHEN_TO_USE,
+  IAMCHINESE_SKILL_CONTENT,
+  IAMCHINESE_SKILL_DESCRIPTION,
+  IAMCHINESE_SKILL_NAME,
+  IAMCHINESE_SKILL_WHEN_TO_USE,
   registerCnPersonaSkill,
 } from './skill.js'
 export * from './core/persona.js'

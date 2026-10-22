@@ -279,7 +279,7 @@ class Persona:
 
     @classmethod
     def from_dict(cls, data: Dict[str, object]) -> "Persona":
-        """从 ``cn-profile.json`` 读回。缺字段直接抛 ``KeyError``，不猜。"""
+        """从 ``iamchinese-profile.json`` 读回。缺字段直接抛 ``KeyError``，不猜。"""
         address = data["address"]
         network = data["network"]
         system = data["system"]

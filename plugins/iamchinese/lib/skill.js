@@ -11,19 +11,19 @@
  */
 
 /** 技能 id，kebab-case，可寻址为 `/iamchinese`。 */
-export const CN_PERSONA_SKILL_NAME = 'iamchinese'
+export const IAMCHINESE_SKILL_NAME = 'iamchinese'
 
-export const CN_PERSONA_SKILL_DESCRIPTION =
+export const IAMCHINESE_SKILL_DESCRIPTION =
   '把开发/测试环境配成一套自洽的中国用户人设：生成身份与网络字段、检查内部是否自洽、'
   + '打印落地清单、写档案文件、导出可发给朋友的分享包。任何「把这个环境弄成国内口径」'
-  + '的任务，先读这份手册再调 cn_persona* 工具。'
+  + '的任务，先读这份手册再调 iamchinese* 工具。'
 
-export const CN_PERSONA_SKILL_WHEN_TO_USE =
+export const IAMCHINESE_SKILL_WHEN_TO_USE =
   '需要造一份中国用户的人设、核对 locale/时区/号段/身份证区划是否对得上、'
   + '把档案落到机器上、或者把一份人设打包给别人时。也适用于「这个测试账号看起来'
   + '像不像国内用户」「时区还是 UTC 没改」这类收尾检查。'
 
-export const CN_PERSONA_SKILL_CONTENT = `# 中国用户人设：先自洽，再落地
+export const IAMCHINESE_SKILL_CONTENT = `# 中国用户人设：先自洽，再落地
 
 核心一句：**这份东西的价值不在名字多像，而在字段之间不打架**。单看每个字段都真，
 凑一起矛盾就是假的——身份证前 6 位和收货地址不在一个区、手机号段和运营商不是一家、
@@ -33,14 +33,14 @@ locale 是 zh-CN 而时区还停在 UTC。所以顺序永远是「生成 → 自
 
 | 工具 | 用在哪 |
 | --- | --- |
-| \`cn_persona\` | 造一份人设。给 \`seed\` 可复现；不给就用默认 seed，同一台机器每次结果一致 |
-| \`cn_persona_check\` | 读回一份档案，跑六项自洽检查 + 当前环境对比。**改完任何东西都要再跑一次** |
-| \`cn_persona_plan\` | 打印落地清单（系统区域、时区、浏览器语言、验收）。不写文件 |
-| \`cn_persona_apply\` | 真写文件：\`cn-profile.json\` + \`env.sh\` + \`env.ps1\` |
-| \`cn_persona_share\` | 导出分享包（三个文件 + README），附一句能直接粘贴的话 |
+| \`iamchinese\` | 造一份人设。给 \`seed\` 可复现；不给就用默认 seed，同一台机器每次结果一致 |
+| \`iamchinese_check\` | 读回一份档案，跑六项自洽检查 + 当前环境对比。**改完任何东西都要再跑一次** |
+| \`iamchinese_plan\` | 打印落地清单（系统区域、时区、浏览器语言、验收）。不写文件 |
+| \`iamchinese_apply\` | 真写文件：\`iamchinese-profile.json\` + \`env.sh\` + \`env.ps1\` |
+| \`iamchinese_share\` | 导出分享包（三个文件 + README），附一句能直接粘贴的话 |
 
-典型链路：\`cn_persona\` → \`cn_persona_apply\` → \`cn_persona_check\` → 人照清单改机器 →
-再 \`cn_persona_check\`。要给朋友就最后来一发 \`cn_persona_share\`。
+典型链路：\`iamchinese\` → \`iamchinese_apply\` → \`iamchinese_check\` → 人照清单改机器 →
+再 \`iamchinese_check\`。要给朋友就最后来一发 \`iamchinese_share\`。
 
 ## 六项自洽检查（check 输出的那六行）
 
@@ -65,7 +65,7 @@ locale 是 zh-CN 而时区还停在 UTC。所以顺序永远是「生成 → 自
 
 ## 复验怎么看
 
-\`cn_persona_check\` 给两块输出：**人设自洽**（档案内部对不对）和**环境对比**
+\`iamchinese_check\` 给两块输出：**人设自洽**（档案内部对不对）和**环境对比**
 （这台机器现在是什么）。两块是不同的事：档案可以全绿而机器还全是默认值，那不是
 数据错，是还没落地。报告里 \`fix\` 字段给的是该执行的命令，不是已经执行过的命令。
 
@@ -103,10 +103,10 @@ export function registerCnPersonaSkill(ctx) {
   const fiber = ctx.inject(['skills'], scoped => {
     const skills = scoped.skills
     scoped.effect(() => skills.register({
-      name: CN_PERSONA_SKILL_NAME,
-      description: CN_PERSONA_SKILL_DESCRIPTION,
-      whenToUse: CN_PERSONA_SKILL_WHEN_TO_USE,
-      content: CN_PERSONA_SKILL_CONTENT,
+      name: IAMCHINESE_SKILL_NAME,
+      description: IAMCHINESE_SKILL_DESCRIPTION,
+      whenToUse: IAMCHINESE_SKILL_WHEN_TO_USE,
+      content: IAMCHINESE_SKILL_CONTENT,
       source: 'bundled',
     }), 'iamchinese:skill')
   })

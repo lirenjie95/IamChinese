@@ -12,7 +12,7 @@ $ARGUMENTS 是收件人的称呼（比如「老张」）。没说就用 `朋友`
 node "${CLAUDE_PLUGIN_ROOT}/bin/iamchinese.mjs" share --from "$ARGUMENTS"
 ```
 
-产出一个自包含目录（`cn-profile.json` + `env.sh` + `env.ps1` + 说明），末尾有一句能直接
+产出一个自包含目录（`iamchinese-profile.json` + `env.sh` + `env.ps1` + 说明），末尾有一句能直接
 粘进微信的话。念给他听的时候顺带说明：包里只有按种子拼出来的样例，没有凭据、没有真实手机号。
 
 ## 情况二：让对方把插件本身装上（现场分发）

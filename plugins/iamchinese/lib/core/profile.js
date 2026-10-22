@@ -17,7 +17,7 @@ import {
   renderCard,
 } from './persona.js'
 
-export const PROFILE_NAME = 'cn-profile.json'
+export const PROFILE_NAME = 'iamchinese-profile.json'
 export const ENV_SH_NAME = 'env.sh'
 export const ENV_PS1_NAME = 'env.ps1'
 export const SCHEMA_VERSION = 1
@@ -52,7 +52,7 @@ async function writeAtomic(path, text) {
 }
 
 /**
- * 把一份人设写成 `cn-profile.json` + `env.sh` + `env.ps1`。
+ * 把一份人设写成 `iamchinese-profile.json` + `env.sh` + `env.ps1`。
  * @param {string} dir 输出目录。
  * @param {object} persona
  * @param {{ policyVersion?: string, now?: Date }} [meta]
@@ -63,7 +63,7 @@ export async function writeProfile(dir, persona, meta = {}) {
   const body = {
     schema: SCHEMA_VERSION,
     generated_at: (meta.now ?? new Date()).toISOString(),
-    policy_version: meta.policyVersion ?? 'iamchinese-0.2.0',
+    policy_version: meta.policyVersion ?? 'iamchinese-0.3.0',
     persona: personaToJSON(persona),
   }
   await writeAtomic(paths.profile, `${JSON.stringify(body, null, 2)}\n`)
@@ -73,7 +73,7 @@ export async function writeProfile(dir, persona, meta = {}) {
 }
 
 /**
- * 读回档案。既接受目录也接受 `cn-profile.json` 的完整路径。
+ * 读回档案。既接受目录也接受 `iamchinese-profile.json` 的完整路径。
  * @param {string} target
  * @returns {Promise<{ persona: object, meta: { schema: number, generated_at?: string, policy_version?: string }, path: string }>}
  */
@@ -157,7 +157,7 @@ export function planText(persona, dir) {
     '3. 不改别人的设备，不把档案包发给不知情的人',
     '',
     '## 五、验收',
-    '1. `iamchinese verify`（或插件里的 cn_persona_check）应当全绿',
+    '1. `iamchinese verify`（或插件里的 iamchinese_check）应当全绿',
     '2. 打开一个看地区的站点，确认它认为你在国内',
     '3. 终端里 `date` 输出应当是北京时间，`locale` 应当是 zh_CN.UTF-8',
   ].join('\n')
@@ -204,7 +204,7 @@ export async function writeShareBundle(dir, persona, options = {}) {
   files.push(await writeAtomic(join(target, PROFILE_NAME), `${JSON.stringify({
     schema: SCHEMA_VERSION,
     generated_at: new Date().toISOString(),
-    policy_version: 'iamchinese-0.2.0-share',
+    policy_version: 'iamchinese-0.3.0-share',
     persona: personaToJSON(persona),
   }, null, 2)}\n`))
   files.push(await writeAtomic(join(target, ENV_SH_NAME), personaEnvFile(persona)))

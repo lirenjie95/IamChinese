@@ -1,6 +1,6 @@
 {
   "name": "iamchinese",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Treat the session as a mainland-China user: consistent persona (ID region code, phone prefix, carrier ASN, locale, time zone), a landing checklist and a self-check, plus one command that packages it for a friend.",
   "type": "module",
   "main": "lib/index.js",

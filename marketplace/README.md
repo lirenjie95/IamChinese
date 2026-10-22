@@ -24,7 +24,7 @@ gh repo edit lirenjie95/IamChinese --add-topic dsh-plugin --add-topic claude-cod
 ```
 
 他们推荐把包发到 npm 或挂一个 GitHub Release 的 `.tgz`，这样市场里给的是一行安装命令而不是
-源码构建。v0.2.0 的 Release 已经建好（见第三节），条目里的 `tarball:` 就指向它——钉住 tag，
+源码构建。v0.3.0 的 Release 已经建好（见第三节），条目里的 `tarball:` 就指向它——钉住 tag，
 不用 `latest/download/`，因为后者只解析 `latest`、文件名却照字面取，下次发版就 404。
 
 一个 PR 最多 3 条，描述必须与代码对得上（「五个工具、六项校验」就是他们核对的数字）。
@@ -60,12 +60,12 @@ claude plugin validate .
 cd plugins/iamchinese
 npm run dist
 cd ..
-gh release create v0.2.0 `
-  plugins/iamchinese/dist/iamchinese-0.2.0.tgz `
+gh release create v0.3.0 `
+  plugins/iamchinese/dist/iamchinese-0.3.0.tgz `
   plugins/iamchinese/dist/iamchinese-claude.zip `
   plugins/iamchinese/dist/install.ps1 `
   plugins/iamchinese/dist/install.sh `
-  --title "v0.2.0" --notes-file marketplace/release-notes.md
+  --title "v0.3.0" --notes-file marketplace/release-notes.md
 ```
 
 ## 四、npm（可选；国内网络下最容易卡的一步）

@@ -28,7 +28,7 @@ Installed as a plugin, both hosts treat you as a mainland-China user from the fi
 Simplified Chinese in the session, dates as `2026-10-21`, money as `¥ CNY`, addresses as
 province → city → district → street, weeks starting Monday. It does not touch your system
 locale, your registry, or any tool's behaviour, and it does not fake an egress IP. Set
-`CN_PERSONA_NO_PROMPT=1` on the DSH side to turn that off. If you want an actual concrete
+`IAMCHINESE_NO_PROMPT=1` on the DSH side to turn that off. If you want an actual concrete
 persona generated, use the tools below.
 
 ---
@@ -40,8 +40,8 @@ python -m unittest discover -s tests -t . -v      # all tests, ~0.7 s
 
 python -m regiongate persona                       # print a persona + the six consistency checks
 python -m regiongate plan                          # print the manual checklist, writes nothing
-python -m regiongate apply --out .\profile         # write cn-profile.json + env.sh + env.ps1
-python -m regiongate verify --profile .\profile\cn-profile.json
+python -m regiongate apply --out .\profile         # write iamchinese-profile.json + env.sh + env.ps1
+python -m regiongate verify --profile .\profile\iamchinese-profile.json
 python -m regiongate undo --out .\profile          # delete only the three files it wrote
 
 python -m regiongate check                         # run region evaluation with that persona
@@ -84,15 +84,15 @@ node --test                                      # 81 cases, no dependencies
 # install into DSH (dsh appends the package to the profile's bundle stack by itself)
 dsh plugin --profile web add D:\IamChinese\plugin
 # or from the packed tarball — this is the path a friend takes
-dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz
+dsh plugin --profile web add .\dist\iamchinese-0.3.0.tgz
 
 npm run dist                                     # tgz + zip + install.ps1 + 发给朋友.md + qr.png
 npm run share                                    # local distribution page; phone scans, downloads (port 8848)
 ```
 
-Five tools show up after install: `cn_persona` (generate), `cn_persona_plan` (checklist),
-`cn_persona_apply` (write the three files), `cn_persona_check` (six checks + environment diff),
-`cn_persona_share` (export a share bundle), plus a `iamchinese` skill that explains the order to
+Five tools show up after install: `iamchinese` (generate), `iamchinese_plan` (checklist),
+`iamchinese_apply` (write the three files), `iamchinese_check` (six checks + environment diff),
+`iamchinese_share` (export a share bundle), plus a `iamchinese` skill that explains the order to
 use them in. On the Claude Code side, `.claude-plugin/plugin.json` is the manifest,
 `skills/iamchinese/SKILL.md` explains the order, `commands/` adds three slash commands
 (persona/apply/share), and the CLI is the same file.
@@ -120,8 +120,8 @@ and JS versions. To line them up, pass the full profile instead.
 | Path | Command |
 |---|---|
 | DSH plugin, from npm | `dsh plugin --profile web add iamchinese` |
-| DSH plugin, from the release asset | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/iamchinese-0.2.0.tgz` |
-| DSH plugin, from a local tarball | `dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz` |
+| DSH plugin, from the release asset | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/iamchinese-0.3.0.tgz` |
+| DSH plugin, from a local tarball | `dsh plugin --profile web add .\dist\iamchinese-0.3.0.tgz` |
 | Claude Code, this repo as a marketplace | `claude plugin marketplace add lirenjie95/IamChinese` then `claude plugin install iamchinese@iamchinese` |
 | Claude Code, inside a session | `/plugin marketplace add lirenjie95/IamChinese`, then `/plugin install iamchinese@iamchinese` |
 | Anything else | `plugins/iamchinese/dist/` — tarball, Claude zip, `install.ps1`, `发给朋友.md`, QR |

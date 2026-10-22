@@ -12,7 +12,7 @@
 
 | 装在 | 得到什么 | 清单 |
 | --- | --- | --- |
-| **DeepSeek Harness** | 5 个模型工具（`cn_persona` / `cn_persona_plan` / `cn_persona_apply` / `cn_persona_check` / `cn_persona_share`）+ 一份 `iamchinese` 技能 | `cordis.patch.yml` |
+| **DeepSeek Harness** | 5 个模型工具（`iamchinese` / `iamchinese_plan` / `iamchinese_apply` / `iamchinese_check` / `iamchinese_share`）+ 一份 `iamchinese` 技能 | `cordis.patch.yml` |
 | **Claude Code** | 一份 `iamchinese` 技能，驱动同一个 CLI | `.claude-plugin/plugin.json` + `skills/iamchinese/SKILL.md` |
 
 两边共用 `bin/iamchinese.mjs` 和 `lib/core/`，逻辑只有一份。
@@ -48,7 +48,7 @@
 它明确不碰的东西：
 
 - 不改系统 locale、时区、注册表、浏览器语言列表（`env.ps1` 里那些命令依然要你自己点头才执行）；
-- 不改任何工具的参数或行为，五个 `cn_persona*` 工具和一份技能跟以前一模一样；
+- 不改任何工具的参数或行为，五个 `iamchinese*` 工具和一份技能跟以前一模一样；
 - 不联网、不写文件、不读用户目录；Claude 侧 hook 即使自己出错也 `exit 0`，不让会话起不来；
 - 不假装出口 IP。提示里只写语言与习惯，不写「你从中国上网」——那是线路的事。
 
@@ -58,7 +58,7 @@
 node hooks/china-context.mjs        # Claude 侧：这一段就是模型看到的
 ```
 
-想临时关掉 DSH 侧：`CN_PERSONA_NO_PROMPT=1` 再重启；彻底不要就 `dsh plugin --profile web remove iamchinese`，
+想临时关掉 DSH 侧：`IAMCHINESE_NO_PROMPT=1` 再重启；彻底不要就 `dsh plugin --profile web remove iamchinese`，
 提示跟着一起消失——注册的是一个 cordis effect，撤插件等于撤这一节。
 
 Claude 侧同理，`claude plugin remove iamchinese` 之后 hook 不再运行。
@@ -70,8 +70,8 @@ Claude 侧同理，`claude plugin remove iamchinese` 之后 hook 不再运行。
 dsh plugin --profile web add D:\path\to\iamchinese
 
 # 从打包好的 tgz 装（发给朋友就用这个）
-npm run dist                     # 产出 dist/iamchinese-0.2.0.tgz
-dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz
+npm run dist                     # 产出 dist/iamchinese-0.3.0.tgz
+dsh plugin --profile web add .\dist\iamchinese-0.3.0.tgz
 ```
 
 `dsh plugin` 只是把参数转给 profile 里的 pnpm；装完它自己会把包追加进 `dsh.profile.bundles`，不用手改。验证：
@@ -82,7 +82,7 @@ dsh --profile web --dump-config | Select-String 'iamchinese'
 
 看到 `- id: iamchinese` 就是挂上了。没有 `tools` 服务的 profile 只挂技能、不挂工具，插件本身不会因此加载失败。
 
-**装完要重启 DSH 才生效**：`bundles` 在启动时装配，`patchReload: live` 只热更 `cordis.patch.yml`，不会重新加载刚装进来的包。重启后对话里应该多出五个 `cn_persona*` 工具和一条 `iamchinese` 技能；如果 GUI 起不来，先 `dsh plugin --profile web remove iamchinese` 退回上一版。
+**装完要重启 DSH 才生效**：`bundles` 在启动时装配，`patchReload: live` 只热更 `cordis.patch.yml`，不会重新加载刚装进来的包。重启后对话里应该多出五个 `iamchinese*` 工具和一条 `iamchinese` 技能；如果 GUI 起不来，先 `dsh plugin --profile web remove iamchinese` 退回上一版。
 
 ## 安装：Claude Code
 
@@ -115,7 +115,7 @@ Claude 侧拿到的东西和 DSH 侧是同一份逻辑，两块外壳不同：
 
 ```bash
 node bin/iamchinese.mjs persona              # 看一份人设，--json 出结构化字段
-node bin/iamchinese.mjs apply                # 写 .iamchinese/{cn-profile.json,env.sh,env.ps1}
+node bin/iamchinese.mjs apply                # 写 .iamchinese/{iamchinese-profile.json,env.sh,env.ps1}
 node bin/iamchinese.mjs verify               # 六项自洽 + 当前环境差哪几项，红了退出码 1
 node bin/iamchinese.mjs plan                 # 真改机器前的落地清单
 node bin/iamchinese.mjs share --from 我的名字  # 导出能直接发给别人的包
@@ -130,7 +130,7 @@ node bin/iamchinese.mjs undo                 # 只删这三件套
 
 ```
 iamchinese-share/
-├── cn-profile.json     完整人设（含六项自洽所需的全部字段）
+├── iamchinese-profile.json     完整人设（含六项自洽所需的全部字段）
 ├── env.sh              等价 shell 环境
 ├── env.ps1             Windows 等价命令
 └── README.md           这是样例、别拿去注册或实名

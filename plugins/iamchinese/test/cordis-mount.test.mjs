@@ -65,7 +65,7 @@ test('真 cordis：没有 skills 服务时不崩，有了就注册', { skip }, a
   assert.equal(skills.length, 1)
   assert.equal(skills[0].name, 'iamchinese')
   assert.equal(skills[0].source, 'bundled')
-  assert.match(skills[0].content, /cn_persona/)
+  assert.match(skills[0].content, /iamchinese/)
 })
 
 /** 宿主那份 SystemPrompt 真身：能装上才有资格谈「注册进去了」。 */

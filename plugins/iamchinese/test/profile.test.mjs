@@ -34,7 +34,7 @@ test('apply 写三个文件，profile 能读回', async () => {
   const loaded = await readProfile(dir)
   assert.deepEqual(loaded.persona, persona)
   assert.equal(loaded.meta.schema, 1)
-  assert.equal(loaded.meta.policy_version, 'iamchinese-0.2.0')
+  assert.equal(loaded.meta.policy_version, 'iamchinese-0.3.0')
 })
 
 test('档案也接受直接给 json 路径', async () => {

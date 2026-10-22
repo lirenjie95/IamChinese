@@ -75,15 +75,15 @@ test('apply → verify → undo 走通，且三件套是唯一产物', async () 
   try {
     const applied = await run(['apply', '--out', dir])
     assert.equal(applied.code, 0)
-    assert.deepEqual((await readdir(dir)).sort(), ['cn-profile.json', 'env.ps1', 'env.sh'])
+    assert.deepEqual((await readdir(dir)).sort(), ['env.ps1', 'env.sh', 'iamchinese-profile.json'])
 
     // --no-env：只验档案内部自洽，不拿这台机器的环境来判（环境项在别的用例里）
-    const verified = await run(['verify', '--profile', join(dir, 'cn-profile.json'), '--no-env'])
+    const verified = await run(['verify', '--profile', join(dir, 'iamchinese-profile.json'), '--no-env'])
     assert.equal(verified.code, 0)
     assert.match(verified.out, /人设自检/)
 
     // 手改档案里的区划码（档案里它挂在 address.region_code 下），verify 必须红
-    const file = join(dir, 'cn-profile.json')
+    const file = join(dir, 'iamchinese-profile.json')
     const data = JSON.parse(await readFile(file, 'utf8'))
     data.persona.address.region_code = '110105'
     await writeFile(file, JSON.stringify(data), 'utf8')
@@ -104,7 +104,7 @@ test('share：导出四个文件并给出可粘贴的话术', async () => {
   try {
     const result = await run(['share', '--from', '老张', '--out', dir])
     assert.equal(result.code, 0)
-    assert.deepEqual((await readdir(dir)).sort(), ['README.md', 'cn-profile.json', 'env.ps1', 'env.sh'])
+    assert.deepEqual((await readdir(dir)).sort(), ['README.md', 'env.ps1', 'env.sh', 'iamchinese-profile.json'])
     assert.match(result.out, /可以直接发的话/)
     // 收件人只落在 README 里，不上命令行话术（那是给收件人看的，不是给他看自己名字）
     assert.match(await readFile(join(dir, 'README.md'), 'utf8'), /老张/)

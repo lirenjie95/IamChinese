@@ -43,7 +43,7 @@ const outputObject = (properties, required = []) => ({
   ...(required.length > 0 ? { required } : {}),
 })
 
-/** `cn_persona_check` 输出的六项检查数组。 */
+/** `iamchinese_check` 输出的六项检查数组。 */
 const checkArraySchema = {
   type: 'array',
   items: outputObject(
@@ -64,11 +64,11 @@ const summarySchema = (extra, required = ['summary']) => outputObject(
  */
 export function createCnTools() {
   const cnPersona = {
-    name: 'cn_persona',
+    name: 'iamchinese',
     description: '生成一份「中国用户」人设：姓名、性别、出生日期、身份证（含校验位）、'
       + '手机号（号段与运营商/ASN 绑定）、真实区划码对应的省市区地址、邮箱、职业与单位、'
       + 'locale 与时区、书写约定。同一 seed 结果完全一致，所以复现和分享都靠 seed。'
-      + '生成后立刻调 cn_persona_check 验一遍六项自洽——这一步不是可选的。',
+      + '生成后立刻调 iamchinese_check 验一遍六项自洽——这一步不是可选的。',
     parameters: {
       seed: int(`复现用种子，默认 ${DEFAULT_PERSONA_SEED}。同一个种子在同一版本内稳定。`),
       brief: bool('只返回一行摘要而不是完整 JSON（默认 false，返回完整人设）。'),
@@ -86,13 +86,13 @@ export function createCnTools() {
   }
 
   const cnPersonaPlan = {
-    name: 'cn_persona_plan',
+    name: 'iamchinese_plan',
     description: '打印把环境配成中国口径的落地清单：系统区域与时区怎么设、浏览器语言列表'
       + '怎么排、书写约定怎么对齐、哪几件事不该做、验收看什么。只读不写，适合先给人看'
       + '再决定要不要真改机器。',
     parameters: {
       out_dir: str(`档案目录，默认 ${DEFAULT_OUT_DIR}。`),
-      seed: int('用哪份人设生成清单，默认与 cn_persona 相同。'),
+      seed: int('用哪份人设生成清单，默认与 iamchinese 相同。'),
     },
     output: {
       schema: summarySchema({ out_dir: { type: 'string' } }, ['summary', 'out_dir']),
@@ -108,13 +108,13 @@ export function createCnTools() {
   }
 
   const cnPersonaApply = {
-    name: 'cn_persona_apply',
-    description: '把一份人设写成三个文本文件：cn-profile.json（档案本体）、env.sh、env.ps1'
+    name: 'iamchinese_apply',
+    description: '把一份人设写成三个文本文件：iamchinese-profile.json（档案本体）、env.sh、env.ps1'
       + '（locale 与时区的等价命令）。只写这三个文件，不碰系统设置、不装东西、不改注册表。'
-      + '写完用 cn_persona_check 复验。',
+      + '写完用 iamchinese_check 复验。',
     parameters: {
       out_dir: str(`输出目录，默认 ${DEFAULT_OUT_DIR}。`),
-      seed: int('用哪份人设，默认与 cn_persona 相同。'),
+      seed: int('用哪份人设，默认与 iamchinese 相同。'),
     },
     output: {
       schema: summarySchema({
@@ -142,12 +142,12 @@ export function createCnTools() {
   }
 
   const cnPersonaCheck = {
-    name: 'cn_persona_check',
+    name: 'iamchinese_check',
     description: '读回一份档案，做两件事：一是六项人设自洽检查（locale↔时区、身份证区划↔地址、'
       + '顺序码↔性别、号段↔运营商、号段↔ASN、手机号长度）；二是和当前机器对比 locale/时区/'
       + 'LANG/TZ，没对上的项给出该执行的命令（只是建议，不执行）。改完之后必须再跑一次。',
     parameters: {
-      profile: str(`档案目录或 cn-profile.json 路径，默认 ${DEFAULT_OUT_DIR}。`),
+      profile: str(`档案目录或 iamchinese-profile.json 路径，默认 ${DEFAULT_OUT_DIR}。`),
       include_environment: bool('是否对比当前环境（默认 true）。要纯看档案时就关掉。'),
     },
     output: {
@@ -180,13 +180,13 @@ export function createCnTools() {
   }
 
   const cnPersonaShare = {
-    name: 'cn_persona_share',
-    description: '把一份人设导成能直接发给朋友的分享包：cn-profile.json、env.sh、env.ps1、'
+    name: 'iamchinese_share',
+    description: '把一份人设导成能直接发给朋友的分享包：iamchinese-profile.json、env.sh、env.ps1、'
       + 'README.md（写清这是样例、不能拿去注册或实名），外加一句可以直接粘贴的话。'
       + '包里不放任何凭据和真实号码。',
     parameters: {
       out_dir: str('分享包目录，默认 ./iamchinese-share。'),
-      seed: int('用哪份人设，默认与 cn_persona 相同。'),
+      seed: int('用哪份人设，默认与 iamchinese 相同。'),
       from: str('署名，写进 README 的「来自」。'),
       note: str('附言，一句话。'),
     },
@@ -217,9 +217,9 @@ export function createCnTools() {
 }
 
 export const CN_TOOL_NAMES = [
-  'cn_persona',
-  'cn_persona_plan',
-  'cn_persona_apply',
-  'cn_persona_check',
-  'cn_persona_share',
+  'iamchinese',
+  'iamchinese_plan',
+  'iamchinese_apply',
+  'iamchinese_check',
+  'iamchinese_share',
 ]

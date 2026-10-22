@@ -24,7 +24,7 @@
 装进 DSH / Claude 之后，**默认把你当成中国大陆用户**：会话里说简体中文，日期按
 `2026-10-21`、金额按 `¥ CNY`、地址按「省 → 市 → 区 → 街道」、一周从周一算。这一步不改你的
 系统 locale、不改注册表、不改任何工具的行为，也不假装出口 IP；DSH 侧设
-`CN_PERSONA_NO_PROMPT=1` 就能关掉。想让它「生成一份具体的人设」，再走下面的工具。
+`IAMCHINESE_NO_PROMPT=1` 就能关掉。想让它「生成一份具体的人设」，再走下面的工具。
 
 ---
 
@@ -35,8 +35,8 @@ python -m unittest discover -s tests -t . -v      # 全部测试，约 0.4 秒
 
 python -m regiongate persona                       # 打印一套人设 + 六项自洽检查
 python -m regiongate plan                          # 打印手工落地清单，不写盘
-python -m regiongate apply --out .\profile         # 写出 cn-profile.json + env.sh + env.ps1
-python -m regiongate verify --profile .\profile\cn-profile.json
+python -m regiongate apply --out .\profile         # 写出 iamchinese-profile.json + env.sh + env.ps1
+python -m regiongate verify --profile .\profile\iamchinese-profile.json
 python -m regiongate undo --out .\profile          # 只删它自己写的三个文件
 
 python -m regiongate check                         # 用人设跑一遍地区判定
@@ -77,15 +77,15 @@ node --test                                      # 81 个用例，零依赖
 # 装进 DSH（装完 dsh 会把包自动挂进 profile 的层栈，不用手改配置）
 dsh plugin --profile web add D:\IamChinese\plugin
 # 或用打好的包，朋友那边就是这条路
-dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz
+dsh plugin --profile web add .\dist\iamchinese-0.3.0.tgz
 
 npm run dist                                     # 产出 tgz + zip + install.ps1 + 发给朋友.md + 两张码
 npm run share                                    # 起本机分发页，手机扫码就能下包（默认 8848）
 ```
 
-装好之后会话里多出五个工具：`cn_persona`（生成）、`cn_persona_plan`（清单）、
-`cn_persona_apply`（写三件套）、`cn_persona_check`（六项自洽 + 环境对比）、
-`cn_persona_share`（导出分享包），外加一份 `/iamchinese` 技能讲清它们之间的顺序。
+装好之后会话里多出五个工具：`iamchinese`（生成）、`iamchinese_plan`（清单）、
+`iamchinese_apply`（写三件套）、`iamchinese_check`（六项自洽 + 环境对比）、
+`iamchinese_share`（导出分享包），外加一份 `/iamchinese` 技能讲清它们之间的顺序。
 Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/iamchinese/SKILL.md` 讲顺序、`commands/` 给三个 slash 命令（persona/apply/share），CLI 是同一份。
 
 二维码是这个包里自己编的（`scripts/lib/qr.js`，1–6 版、字节模式、纠错 M/Q，零依赖）。
@@ -104,8 +104,8 @@ Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/iamchinese/SKIL
 | 途径 | 命令 |
 |---|---|
 | DSH 插件，走 npm | `dsh plugin --profile web add iamchinese` |
-| DSH 插件，走 Release 资产 | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/iamchinese-0.2.0.tgz` |
-| DSH 插件，走本地 tgz | `dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz` |
+| DSH 插件，走 Release 资产 | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/iamchinese-0.3.0.tgz` |
+| DSH 插件，走本地 tgz | `dsh plugin --profile web add .\dist\iamchinese-0.3.0.tgz` |
 | Claude Code，把本仓库当 marketplace | `claude plugin marketplace add lirenjie95/IamChinese`，再 `claude plugin install iamchinese@iamchinese` |
 | Claude Code，会话里 | `/plugin marketplace add lirenjie95/IamChinese`，再 `/plugin install iamchinese@iamchinese` |
 | 其他 | `plugins/iamchinese/dist/`：tgz、Claude zip、`install.ps1`、`发给朋友.md`、二维码 |

@@ -33,7 +33,7 @@ const tgzName = `${pkg.name}-${pkg.version}.tgz`
 const stableTgz = `${pkg.name}.tgz`
 const zipName = 'iamchinese-claude.zip'
 
-/** Claude 侧要带走的文件：CLI 全套 + 清单 + 技能 + 命令 + 分发脚本 + 说明。 */
+/** Claude 侧要带走的文件：CLI 全套 + 清单 + 技能 + 命令 + 分发脚本 + logo + 说明。 */
 const CLAUDE_PARTS = [
   '.claude-plugin',
   'skills',
@@ -42,6 +42,7 @@ const CLAUDE_PARTS = [
   'bin',
   'lib',
   'scripts',
+  'assets',
   'cordis.patch.yml',
   'README.md',
   'LICENSE',
@@ -75,7 +76,7 @@ if ($LASTEXITCODE -ne 0) { throw "安装失败，退出码 $LASTEXITCODE" }
 
 Write-Host ''
 Write-Host "装好了。重启 DSH（profile: $ProfileName）之后："
-Write-Host '  - 会话里多出 5 个 cn_persona* 工具和 /iamchinese 技能'
+Write-Host '  - 会话里多出 5 个 iamchinese* 工具和 /iamchinese 技能'
 Write-Host '  - 命令行里 iamchinese persona 也能直接用'
 Write-Host "卸载： dsh plugin --profile $ProfileName remove ${pkg.name}"
 `
@@ -95,7 +96,7 @@ command -v dsh >/dev/null 2>&1 || { echo "没找到 dsh。先 npm i -g @deepseek
 echo "即将执行： dsh plugin --profile $PROFILE add $TARBALL"
 dsh plugin --profile "$PROFILE" add "$TARBALL"
 echo
-echo "装好了。重启 DSH（profile: $PROFILE）之后会话里会多出 cn_persona* 工具与 /iamchinese 技能。"
+echo "装好了。重启 DSH（profile: $PROFILE）之后会话里会多出 iamchinese* 工具与 /iamchinese 技能。"
 echo "卸载： dsh plugin --profile $PROFILE remove ${pkg.name}"
 `
 
@@ -110,7 +111,7 @@ const FRIEND_NOTE = `# 发给朋友：${pkg.name} ${pkg.version}
 装上之后**不改你任何设置**，只是让 DSH / Claude 在会话里把你当成中国大陆用户：
 说简体中文，时间按 Asia/Shanghai，日期写 2026-10-21，金额写 ¥ CNY，地址从省写到街道。
 不碰系统 locale、不碰注册表、不碰浏览器语言，也不改任何工具的行为。
-嫌它多余：DSH 侧设 \`CN_PERSONA_NO_PROMPT=1\`，或者把插件删掉。
+嫌它多余：DSH 侧设 \`IAMCHINESE_NO_PROMPT=1\`，或者把插件删掉。
 
 ## 装（三步）
 
@@ -121,7 +122,7 @@ const FRIEND_NOTE = `# 发给朋友：${pkg.name} ${pkg.version}
 powershell -ExecutionPolicy Bypass -File install.ps1
 \`\`\`
 
-3. 重启 DSH。会话里就有 \`cn_persona\` 这几个工具；命令行里 \`iamchinese persona\` 也能直接用。
+3. 重启 DSH。会话里就有 \`iamchinese\` 这几个工具；命令行里 \`iamchinese persona\` 也能直接用。
 
 macOS / Linux 用 \`sh install.sh\`，效果一样。
 
@@ -151,7 +152,7 @@ npm run share          # 起本机分发页，默认 8848 端口
 
 \`\`\`
 iamchinese persona          # 看一份人设
-iamchinese apply            # 写成 cn-profile.json + env.sh + env.ps1
+iamchinese apply            # 写成 iamchinese-profile.json + env.sh + env.ps1
 iamchinese verify           # 自检：六项人设自洽 + 当前环境差哪几项
 iamchinese plan             # 要真改机器时照这个清单来
 iamchinese share            # 导一份能发给别人的分享包
@@ -169,7 +170,7 @@ iamchinese share            # 导一份能发给别人的分享包
 
 \`\`\`
 dsh plugin --profile web remove ${pkg.name}
-iamchinese undo        # 删掉 cn-profile.json / env.sh / env.ps1
+iamchinese undo        # 删掉 iamchinese-profile.json / env.sh / env.ps1
 \`\`\`
 `
 

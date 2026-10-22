@@ -1,11 +1,21 @@
-# v0.2.0
+# v0.3.0
 
-第一个版本：把「这台机器上的助手把你当成中国大陆用户」做成一个能装、能验、能发给别人的插件。
+工具 id 统一到 `iamchinese`，故事没变：让 DSH 和 Claude Code 把会话当成中国大陆用户。
 
 ## 改名
 
-插件、npm 包、CLI、目录统一叫 `iamchinese` / IamChinese（原名 `cn-persona` / `dsh-cn-persona`）。
-工具 id 仍是 `cn_persona*`：它描述的是「中国人设」这件事，不跟着品牌走，也不该逼着调用方改提示词。
+插件、npm 包、CLI、目录、工具、档案文件名，现在全都叫 `iamchinese` / IamChinese：
+
+| 旧 | 新 |
+| --- | --- |
+| `cn_persona` | `iamchinese` |
+| `cn_persona_plan` / `_apply` / `_check` / `_share` | `iamchinese_plan` / `_apply` / `_check` / `_share` |
+| `CN_PERSONA_NO_PROMPT` | `IAMCHINESE_NO_PROMPT` |
+| `cn-profile.json` | `iamchinese-profile.json` |
+| `cn-persona` / `dsh-cn-persona` | `iamchinese` |
+
+v0.2.0 里工具 id 是故意留着的，这回不留了：一个包里两套前缀，看着就像没改干净。
+`verify` 会在旧档案上直接报缺字段——重新 `iamchinese apply` 一次即可，人设种子相同，生成的内容一字不差。
 
 ## 装上会发生什么
 
@@ -19,7 +29,7 @@
 DSH：
 
 ```powershell
-dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/download/v0.2.0/iamchinese-0.2.0.tgz
+dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/download/v0.3.0/iamchinese-0.3.0.tgz
 ```
 
 Claude Code：
@@ -31,8 +41,8 @@ Claude Code：
 
 ## 里面有什么
 
-- 五个工具：`cn_persona` / `cn_persona_plan` / `cn_persona_apply` / `cn_persona_check` /
-  `cn_persona_share`
+- 五个工具：`iamchinese` / `iamchinese_plan` / `iamchinese_apply` / `iamchinese_check` /
+  `iamchinese_share`
 - 一个技能 `iamchinese`
 - 一个 CLI：`iamchinese persona|plan|apply|verify|share|undo`
 - Python 内核（地区判定、文案、诊断包）+ 137 个用例；JS 插件 81 个用例

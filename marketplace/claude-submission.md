@@ -12,7 +12,7 @@
 | 市场清单 | 仓库根 `.claude-plugin/marketplace.json`，市场名 `iamchinese`，条目名 `iamchinese` |
 | 本地验证 | `/plugin marketplace add lirenjie95/IamChinese` → `/plugin install iamchinese@iamchinese` |
 | 许可证 | MIT（`LICENSE`） |
-| 版本 | 0.2.0 |
+| 版本 | 0.3.0 |
 
 卸载/回滚：`/plugin uninstall iamchinese@iamchinese`。
 
@@ -41,15 +41,15 @@ Treat the session as a mainland-China user — zh-Hans-CN, Asia/Shanghai, ISO da
 > and starts the week on Monday. It changes no tool behaviour and never overrides an explicit
 > instruction from the user.
 >
-> The second is a test fixture generator: five tools (`cn_persona`, `cn_persona_plan`,
-> `cn_persona_apply`, `cn_persona_check`, `cn_persona_share`) and a matching CLI that produce a
+> The second is a test fixture generator: five tools (`iamchinese`, `iamchinese_plan`,
+> `iamchinese_apply`, `iamchinese_check`, `iamchinese_share`) and a matching CLI that produce a
 > persona whose fields agree with each other — the GB 11643 ID card's region code matches the
 > shipping address, the 17th digit matches the stated gender, the check digit is computed rather
 > than invented, the phone prefix matches the carrier's ASN. Six cross-checks report any field
 > that drifts.
 >
 > Everything is deterministic from a seed and runs offline. It reads no network, writes only the
-> files it is asked for (`cn-profile.json`, `env.sh`, `env.ps1`), and changes no system setting:
+> files it is asked for (`iamchinese-profile.json`, `env.sh`, `env.ps1`), and changes no system setting:
 > the "plan" output is a checklist a human follows, not an action.
 
 **Category**：Developer tools（若表单给的是固定列表，选 `productivity` 或 `developer-tools` 里最接近的）
@@ -64,7 +64,7 @@ Treat the session as a mainland-China user — zh-Hans-CN, Asia/Shanghai, ISO da
 
 1. **联网？** 没有。零第三方依赖，`lib/` 只有本地计算；`scripts/share-server.mjs` 是可选的本机分发页，
    要人手动 `npm run share` 才起，且只监听局域网、只发 `dist/` 里的成品文件。
-2. **文件系统？** 只在用户指定的目录里写 `cn-profile.json`、`env.sh`、`env.ps1`（临时文件 + 原子替换），
+2. **文件系统？** 只在用户指定的目录里写 `iamchinese-profile.json`、`env.sh`、`env.ps1`（临时文件 + 原子替换），
    `undo` 只删这三个；不碰系统 locale / 时区 / 注册表 / 浏览器设置。
 3. **会跑命令吗？** `hooks/china-context.mjs` 在 SessionStart 跑一次 `node`，只往 stdout 打一段中文说明
    （约 10 行），任何异常都 `exit 0`，不阻断会话。没有任何子进程、没有 shell 调用。

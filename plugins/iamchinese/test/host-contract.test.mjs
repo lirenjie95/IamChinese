@@ -69,7 +69,7 @@ needsHost('工具真跑出来的输出能通过宿主的值校验', async () => 
 })
 
 needsHost('参数类型写错会被宿主拦下来', () => {
-  const check = createCnTools().find(tool => tool.name === 'cn_persona_check')
+  const check = createCnTools().find(tool => tool.name === 'iamchinese_check')
   const violations = host.validateArgs(check.parameters, { include_environment: 'yes' })
   assert.equal(violations.length, 1)
   assert.match(violations[0], /include_environment/)

@@ -1,5 +1,5 @@
 ---
-description: 把这个人设落成文件：cn-profile.json + env.sh + env.ps1，并复验
+description: 把这个人设落成文件：iamchinese-profile.json + env.sh + env.ps1，并复验
 argument-hint: [输出目录，可选]
 allowed-tools: Bash(node:*)
 ---
@@ -10,7 +10,7 @@ allowed-tools: Bash(node:*)
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/bin/iamchinese.mjs" apply --out OUT
-node "${CLAUDE_PLUGIN_ROOT}/bin/iamchinese.mjs" verify --profile OUT/cn-profile.json
+node "${CLAUDE_PLUGIN_ROOT}/bin/iamchinese.mjs" verify --profile OUT/iamchinese-profile.json
 ```
 
 `verify` 有两块，别混着念：

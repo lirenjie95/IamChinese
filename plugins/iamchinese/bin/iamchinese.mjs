@@ -35,7 +35,7 @@ const USAGE = `iamchinese —— 把环境配成一套自洽的中国用户人�
 用法：
   iamchinese persona [--seed N] [--json]        生成一份人设（不写文件）
   iamchinese plan    [--out DIR] [--seed N]     打印落地清单
-  iamchinese apply   [--out DIR] [--seed N]     写 cn-profile.json / env.sh / env.ps1
+  iamchinese apply   [--out DIR] [--seed N]     写 iamchinese-profile.json / env.sh / env.ps1
   iamchinese verify  [--profile DIR|FILE]       自检 + 与当前环境对比（红了退出码 1）
   iamchinese share   [--out DIR] [--seed N]     导出分享包（可发朋友）
   iamchinese undo    [--out DIR]                删掉三件套

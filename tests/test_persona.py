@@ -220,9 +220,9 @@ class TestCli(WorkspaceTestCase):
         code, _ = invoke(["apply", "--out", str(out)])
         self.assertEqual(code, 0)
         names = sorted(p.name for p in out.iterdir())
-        self.assertEqual(names, ["cn-profile.json", "env.ps1", "env.sh"])
+        self.assertEqual(names, ["env.ps1", "env.sh", "iamchinese-profile.json"])
 
-        profile = json.loads((out / "cn-profile.json").read_text(encoding="utf-8"))
+        profile = json.loads((out / "iamchinese-profile.json").read_text(encoding="utf-8"))
         self.assertEqual(profile["schema"], 1)
         self.assertEqual(profile["policy_version"], "2026-10-19")
         self.assertIn("persona", profile)
@@ -233,14 +233,14 @@ class TestCli(WorkspaceTestCase):
     def test_apply_then_verify(self):
         out = self.tmp / "profile"
         invoke(["apply", "--out", str(out)])
-        code, text = invoke(["verify", "--profile", str(out / "cn-profile.json")])
+        code, text = invoke(["verify", "--profile", str(out / "iamchinese-profile.json")])
         self.assertEqual(code, 0, text)
         self.assertIn("全部通过", text)
 
     def test_verify_rejects_tampered_region(self):
         out = self.tmp / "profile"
         invoke(["apply", "--out", str(out)])
-        path = out / "cn-profile.json"
+        path = out / "iamchinese-profile.json"
         data = json.loads(path.read_text(encoding="utf-8"))
         data["persona"]["address"]["region_code"] = "110105"
         path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
@@ -252,7 +252,7 @@ class TestCli(WorkspaceTestCase):
     def test_verify_rejects_foreign_locale(self):
         out = self.tmp / "profile"
         invoke(["apply", "--out", str(out)])
-        path = out / "cn-profile.json"
+        path = out / "iamchinese-profile.json"
         data = json.loads(path.read_text(encoding="utf-8"))
         data["persona"]["system"]["locale_bcp47"] = "en-US"
         path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")

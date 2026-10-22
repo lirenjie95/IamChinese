@@ -14,7 +14,7 @@
     python -m regiongate check                   # 用人设跑一遍地区判定
     python -m regiongate check --gate --json     # 判定 + 界面文案
     python -m regiongate check --diag .\\diag     # 生成脱敏诊断包
-    python -m regiongate verify --profile .\\profile\\cn-profile.json
+    python -m regiongate verify --profile .\\profile\\iamchinese-profile.json
     python -m regiongate undo --out .\\profile    # 只删它自己写的那几个文件
 """
 
@@ -48,7 +48,7 @@ from .preflight import (
 from .storage import atomic_write_json, atomic_write_text, read_json, remove_files
 from .update import PolicyUpdater
 
-PROFILE_NAME = "cn-profile.json"
+PROFILE_NAME = "iamchinese-profile.json"
 ENV_SH_NAME = "env.sh"
 ENV_PS1_NAME = "env.ps1"
 
@@ -223,7 +223,7 @@ def cmd_apply(args: argparse.Namespace) -> int:
     print("下一步：")
     print("  bash  : source ./profile/env.sh")
     print("  pwsh  : . ./profile/env.ps1")
-    print("  自检  : python -m regiongate verify --profile ./profile/cn-profile.json")
+    print("  自检  : python -m regiongate verify --profile ./profile/iamchinese-profile.json")
     return 0
 
 

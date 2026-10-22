@@ -129,7 +129,7 @@ ${icon}
 <ol>
   <li>把 <code>${TARBALL}</code> 和 <code>install.ps1</code> 下到同一个文件夹。</li>
   <li>在那个文件夹里开 PowerShell：<pre><code>powershell -ExecutionPolicy Bypass -File install.ps1</code></pre></li>
-  <li>重启 DeepSeek Harness。会话里会多出 <code>cn_persona</code> 这五个工具和一条 <code>iamchinese</code> 技能；命令行里 <code>iamchinese persona</code> 也能直接用。</li>
+  <li>重启 DeepSeek Harness。会话里会多出 <code>iamchinese</code> 这五个工具和一条 <code>iamchinese</code> 技能；命令行里 <code>iamchinese persona</code> 也能直接用。</li>
 </ol>
 <p>macOS / Linux 把最后一步换成 <code>sh install.sh</code>。用 Claude Code 就装 <code>iamchinese-claude.zip</code> 解出来的目录。</p>
 

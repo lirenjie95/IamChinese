@@ -19,7 +19,7 @@ export const CHINA_CONTEXT_SECTION_NAME = 'iamchinese:china-context'
 export const CHINA_CONTEXT_ORDER = 40
 
 /** 关掉它的环境变量：想临时验证「没有它也一样」时用。 */
-export const DISABLE_ENV = 'CN_PERSONA_NO_PROMPT'
+export const DISABLE_ENV = 'IAMCHINESE_NO_PROMPT'
 
 /**
  * 要写进提示的那段话。

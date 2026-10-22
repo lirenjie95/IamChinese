@@ -19,19 +19,19 @@ DSH 侧看 `lib/prompt.js` 里的 `CHINA_CONTEXT_TEXT`，Claude 侧直接跑
 先确认一次路径，之后所有命令都用它：
 
 ```bash
-CN_PERSONA="${CLAUDE_PLUGIN_ROOT}/bin/iamchinese.mjs"
-node "$CN_PERSONA" --help
+IAMCHINESE="${CLAUDE_PLUGIN_ROOT}/bin/iamchinese.mjs"
+node "$IAMCHINESE" --help
 ```
 
 ## 顺序：生成 → 自检 → 落地 → 复验
 
 ```bash
-node "$CN_PERSONA" persona              # 看一份人设（加 --json 出结构化字段）
-node "$CN_PERSONA" apply                # 写 .iamchinese/cn-profile.json + env.sh + env.ps1
-node "$CN_PERSONA" verify               # 六项自洽 + 当前环境差哪几项；红了退出码 1
-node "$CN_PERSONA" plan                 # 要真改机器时，照这份清单一条条来
-node "$CN_PERSONA" share --from 你的名字 # 导一份能直接发给别人的包
-node "$CN_PERSONA" undo                 # 删掉三件套
+node "$IAMCHINESE" persona              # 看一份人设（加 --json 出结构化字段）
+node "$IAMCHINESE" apply                # 写 .iamchinese/iamchinese-profile.json + env.sh + env.ps1
+node "$IAMCHINESE" verify               # 六项自洽 + 当前环境差哪几项；红了退出码 1
+node "$IAMCHINESE" plan                 # 要真改机器时，照这份清单一条条来
+node "$IAMCHINESE" share --from 你的名字 # 导一份能直接发给别人的包
+node "$IAMCHINESE" undo                 # 删掉三件套
 ```
 
 `--seed N` 复现同一份人设（默认 20261019）。跨语言没有稳定契约：Python 版和这个
@@ -42,7 +42,7 @@ JS 版同一个种子结果不同，要跨版本对齐就传完整档案，别�
 **只发人设**（对面只要有 JSON 和两段环境变量）：
 
 ```bash
-node "$CN_PERSONA" share --from 你的名字   # 写一个自包含目录 + 一句可粘贴的话
+node "$IAMCHINESE" share --from 你的名字   # 写一个自包含目录 + 一句可粘贴的话
 ```
 
 **让对方把插件装走**（现场分发，同一个 WiFi）：

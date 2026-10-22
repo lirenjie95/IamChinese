@@ -3,7 +3,7 @@ import { test } from 'node:test'
 
 import { mountCnPersona } from '../lib/mount.js'
 import { CN_TOOL_NAMES } from '../lib/tools.js'
-import { CN_PERSONA_SKILL_NAME } from '../lib/skill.js'
+import { IAMCHINESE_SKILL_NAME } from '../lib/skill.js'
 
 /** 只照契约实现，不模拟真实行为：够验证「挂了什么、撤了什么」。 */
 function makeFakeCtx({ skillsService = true, promptService = true } = {}) {
@@ -65,9 +65,9 @@ test('mount 挂上 5 个工具和 1 份技能', () => {
 
   assert.deepEqual([...fake.registered.keys()].sort(), [...CN_TOOL_NAMES].sort())
   assert.equal(fake.skills.length, 1)
-  assert.equal(fake.skills[0].name, CN_PERSONA_SKILL_NAME)
+  assert.equal(fake.skills[0].name, IAMCHINESE_SKILL_NAME)
   assert.equal(fake.skills[0].source, 'bundled')
-  assert.ok(fake.skills[0].content.includes('cn_persona_check'))
+  assert.ok(fake.skills[0].content.includes('iamchinese_check'))
 })
 
 test('每个工具都带 name/description/parameters/output/execute', () => {
@@ -126,7 +126,7 @@ test('参数 DSL 只用宿主认识的节点形状', () => {
 test('工具写出的是 [{ type: "text" }] 形状', () => {
   const fake = makeFakeCtx()
   mountCnPersona(fake.ctx)
-  const blocks = fake.registered.get('cn_persona').output.render({ brief: true }, { summary: '你好' })
+  const blocks = fake.registered.get('iamchinese').output.render({ brief: true }, { summary: '你好' })
   assert.deepEqual(blocks, [{ type: 'text', text: '你好' }])
 })
 
@@ -155,19 +155,19 @@ test('没有 systemPrompt 服务时：工具与技能照挂，身份段安静跳
   assert.equal(fake.skills.length, 1)
 })
 
-test('cn_persona 工具能真跑出六项自洽的人设', async () => {
+test('iamchinese 工具能真跑出六项自洽的人设', async () => {
   const fake = makeFakeCtx()
   mountCnPersona(fake.ctx)
-  const result = await fake.registered.get('cn_persona').execute({})
+  const result = await fake.registered.get('iamchinese').execute({})
   assert.match(result.summary, /身份证/)
   assert.equal(result.persona.gender === '男' || result.persona.gender === '女', true)
   assert.match(result.persona.idCard, /^\d{17}[\dX]$/)
 })
 
-test('cn_persona_plan 不写文件，只给清单', async () => {
+test('iamchinese_plan 不写文件，只给清单', async () => {
   const fake = makeFakeCtx()
   mountCnPersona(fake.ctx)
-  const result = await fake.registered.get('cn_persona_plan').execute({ out_dir: '.iamchinese' })
+  const result = await fake.registered.get('iamchinese_plan').execute({ out_dir: '.iamchinese' })
   assert.match(result.summary, /落地清单/)
   assert.ok(result.out_dir.endsWith('.iamchinese') || result.out_dir.endsWith('iamchinese'))
 })

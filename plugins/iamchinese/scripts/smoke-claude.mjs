@@ -49,7 +49,7 @@ try {
   const out = join(work, 'profile-out')
   run([cli, 'apply', '--out', out])
   const written = (await readdir(out)).sort()
-  assert.deepEqual(written, ['cn-profile.json', 'env.ps1', 'env.sh'])
+  assert.deepEqual(written, ['env.ps1', 'env.sh', 'iamchinese-profile.json'])
   console.log('apply:', written.join('、'))
 
   // 5. 分发页：把自己这个 zip 放进目录，起服务看能不能下

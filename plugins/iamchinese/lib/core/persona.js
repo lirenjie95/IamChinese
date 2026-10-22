@@ -300,7 +300,7 @@ export function personaToJSON(persona) {
 }
 
 /**
- * 从 `cn-profile.json` 的 persona 块读回。缺字段直接抛错，不猜默认值——
+ * 从 `iamchinese-profile.json` 的 persona 块读回。缺字段直接抛错，不猜默认值——
  * 猜出来的地址和身份证必然对不上，那正是要防的事。
  * @param {object} data
  * @returns {object}
