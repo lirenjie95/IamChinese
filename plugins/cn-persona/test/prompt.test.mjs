@@ -96,15 +96,30 @@ test('Claude 侧 hook 清单：SessionStart + 用 CLAUDE_PLUGIN_ROOT 定位脚�
   assert.ok(hook.timeout > 0)
 })
 
-test('Claude 侧 hook 脚本：stdout 就是给模型的上下文，退出码 0', () => {
+/** 跑一次 hook 脚本，返回 stdout。env 传进来是为了模拟英文机器。 */
+function runHook(env = {}) {
   const root = resolve(import.meta.dirname, '..')
-  const output = execFileSync(process.execPath, [join(root, 'hooks/china-context.mjs')], {
+  return execFileSync(process.execPath, [join(root, 'hooks/china-context.mjs')], {
     encoding: 'utf8',
+    env: { ...process.env, ...env },
   })
+}
+
+test('Claude 侧 hook 脚本：stdout 就是给模型的上下文，退出码 0', () => {
+  const output = runHook()
   assert.match(output, /用户所在地区与语言偏好/)
   assert.match(output, /简体中文/)
-  // 机器上探测到的可能是 zh-CN，也可能是 zh-Hans-CN：两种写法都合法
   assert.match(output, /zh(-Hans)?-CN/)
   assert.match(output, /Asia\/Shanghai/)
   assert.doesNotMatch(output, /\d{17}[\dX]/)
+  // 两处文案是同一份人设声明：hook 里的拷贝不许和系统提示那段漂开
+  assert.equal(output, `${CHINA_CONTEXT_TEXT}\n`)
+})
+
+test('Claude 侧 hook 不跟本机 locale 走：英文机器上也只声明中国身份', () => {
+  // 以前这里读 Intl/env，在 CI（en-US/UTC）上打出「界面语言简体中文（en-US）」并被判红
+  const output = runHook({ LANG: 'en_US.UTF-8', LC_ALL: 'en_US.UTF-8', TZ: 'UTC' })
+  assert.match(output, /zh-Hans-CN/)
+  assert.doesNotMatch(output, /en[-_]US/)
+  assert.match(output, /Asia\/Shanghai/)
 })
