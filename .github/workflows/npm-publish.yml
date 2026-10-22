@@ -19,6 +19,10 @@ jobs:
         with:
           node-version: 22
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: 检查 NPM_TOKEN 是否就位
         id: guard
         env:
@@ -31,7 +35,11 @@ jobs:
             echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 测试
+      # 发出去就收不回来，所以两套测试都在发布之前跑
+      - name: 测试（内核）
+        run: python -m unittest discover -s tests -t . -v
+
+      - name: 测试（插件）
         working-directory: plugins/iamchinese
         run: npm test
 

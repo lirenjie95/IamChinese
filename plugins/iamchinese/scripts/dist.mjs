@@ -18,7 +18,7 @@
 import { execFileSync, execSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { REPO_URL, guessUrl, writeQr } from './share-qr.mjs'
@@ -185,20 +185,31 @@ function runNpm(args) {
   return execFileSync('npm', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
 }
 
-/** 用 PowerShell 打 zip；拿不到就返回 false，调用方降级处理。 */
+/**
+ * 把目录打成 zip；拿不到打包工具就返回 false，调用方降级成「只留目录」。
+ *
+ * Windows 上没有 zip.exe（曾经真踩过），用 PowerShell 的 Compress-Archive；
+ * Linux/macOS（含 CI 的 ubuntu runner）用 zip，两者都没有就老实返回 false。
+ */
 async function zipDirectory(sourceDir, zipPath) {
-  const script = `Compress-Archive -LiteralPath '${sourceDir}' -DestinationPath '${zipPath}' -Force`
-  try {
-    execFileSync(
-      isWindows ? 'powershell' : 'sh',
-      isWindows ? ['-NoProfile', '-NonInteractive', '-Command', script] : ['-c', 'command -v zip >/dev/null && echo ok'],
-      { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' },
-    )
-    await stat(zipPath)
-    return true
-  } catch {
-    return false
+  const attempts = isWindows
+    ? [['powershell', ['-NoProfile', '-NonInteractive', '-Command',
+        `Compress-Archive -LiteralPath '${sourceDir}' -DestinationPath '${zipPath}' -Force`]]]
+    : [['zip', ['-qr', zipPath, basename(sourceDir)]], ['python3', ['-m', 'zipfile', '-c', zipPath, sourceDir]]]
+  for (const [command, args] of attempts) {
+    try {
+      execFileSync(command, args, {
+        cwd: isWindows ? undefined : dirname(sourceDir),
+        stdio: ['ignore', 'pipe', 'pipe'],
+        encoding: 'utf8',
+      })
+      await stat(zipPath)
+      return true
+    } catch {
+      // 换下一种；全都不行就返回 false
+    }
   }
+  return false
 }
 
 async function main() {
