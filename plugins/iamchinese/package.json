@@ -25,7 +25,8 @@
     "LICENSE",
     "scripts/share-server.mjs",
     "scripts/share-qr.mjs",
-    "scripts/lib/qr.js"
+    "scripts/lib/qr.js",
+    "scripts/lib/logo-asset.js"
   ],
   "keywords": [
     "dsh",

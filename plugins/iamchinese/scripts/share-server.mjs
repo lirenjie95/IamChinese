@@ -17,6 +17,7 @@ import { extname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { encode, toPng } from './lib/qr.js'
+import { DEFAULT_LOGO_PATHS, loadQrLogo } from './lib/logo-asset.js'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 const DEFAULT_DIR = resolve(HERE, '..', 'dist')
@@ -179,6 +180,14 @@ async function listFiles(dir) {
   return files.sort((one, two) => one.name.localeCompare(two.name))
 }
 
+/**
+ * 二维码中心的小圆章：优先投放目录里的 logo-mark.png，其次插件包的 assets/。
+ * 找不到就返回 null，页面上的码退回无 logo 版本。
+ */
+async function findQrLogo(dir) {
+  return loadQrLogo([join(dir, 'logo-mark.png'), ...DEFAULT_LOGO_PATHS])
+}
+
 /** 默认发哪个目录：有 dist/ 就发 dist/，没有就把插件目录本身当成投放点。 */
 async function resolveDefaultDir() {
   try {
@@ -192,7 +201,7 @@ async function resolveDefaultDir() {
 
 /** 头图与站点图标：先在投放目录里找，再退到仓库根的 assets/（装成插件时那层可能不存在）。 */
 function findBrand(dir) {
-  const roots = [dir, resolve(HERE, '..', '..', 'assets'), resolve(HERE, '..', 'assets')]
+  const roots = [dir, resolve(HERE, '..', '..', '..', 'assets'), resolve(HERE, '..', 'assets')]
   const pick = name => {
     for (const root of roots) {
       const candidate = join(root, name)
@@ -217,6 +226,7 @@ export async function startShareServer(options = {}) {
   const baseUrl = options.baseUrl ?? autoBase
   const files = await listFiles(dir)
   const brand = findBrand(dir)
+  const qrLogo = await findQrLogo(dir)
 
   if (files.length === 0) {
     throw new Error(`${dir} 里没有可发的文件：先跑 npm run dist，或用 --dir 指向放包的那个目录`)
@@ -256,8 +266,8 @@ export async function startShareServer(options = {}) {
 
     if (path === '/qr.png') {
       const target = url.searchParams.get('url') ?? baseUrl
-      const qr = encode(target, { ecc: 'Q' })
-      const png = toPng(qr, { scale: 10, quiet: 4 })
+      const qr = encode(target, { ecc: qrLogo ? 'H' : 'Q' })
+      const png = toPng(qr, { scale: 10, quiet: 4, logo: qrLogo })
       res.writeHead(200, {
         'Content-Type': 'image/png',
         'Content-Length': png.length,

@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { encode, QR_MAX_VERSION, toPng, toText } from '../scripts/lib/qr.js'
+import { decodePng, encode, QR_MAX_VERSION, toPng, toText } from '../scripts/lib/qr.js'
 
 /** 读格式信息的两份拷贝（规范要求两份一致，这是最容易被写错的地方）。 */
 function formatCopies(modules) {
@@ -103,7 +103,7 @@ test('版本越界、内容为空、非字符串都报错', () => {
   assert.throws(() => encode(42), TypeError)
   assert.throws(() => encode('abc', { version: 7 }), /版本/)
   assert.throws(() => encode('abc', { version: 0 }), /版本/)
-  assert.throws(() => encode('abc', { ecc: 'H' }), /纠错等级/)
+  assert.throws(() => encode('abc', { ecc: 'L' }), /纠错等级/)
 })
 
 test('中文按 UTF-8 字节数算容量', () => {
@@ -128,4 +128,49 @@ test('toText 的宽高与模块数一致', () => {
   const lines = toText(qr).split('\n')
   assert.equal(lines.length, qr.size + 2)
   assert.equal(lines[1].length, (qr.size + 2) * 2)
+})
+
+test('H 级：容量更小，但格式信息与 M/Q 同构', () => {
+  // H 级 1 版能放 7 字节，第 8 个就放不下——这是 H 级的定义，不是随便挑的数
+  assert.doesNotThrow(() => encode('1234567', { ecc: 'H', version: 1 }))
+  assert.throws(() => encode('12345678', { ecc: 'H', version: 1 }), /放不下/)
+  const h = encode('a', { version: 1, ecc: 'H' })
+  const q = encode('a', { version: 1, ecc: 'Q' })
+  assert.equal(h.size, q.size, '同版本边长应该一致')
+  // 两份格式信息除纠错位外形状相同：都在 (8,0..5) 一带被写死
+  assert.notDeepEqual(h.modules, q.modules, '纠错等级不同，掩码/格式位不该完全相同')
+})
+
+test('带 logo 时输出真彩 PNG，中心被挖白并贴图', () => {
+  // 造一个 4×4 的纯红方块当 logo，贴上去后中心像素必须是红的
+  const data = Buffer.alloc(4 * 4 * 4)
+  for (let i = 0; i < 4 * 4; i++) {
+    data[i * 4] = 255
+    data[i * 4 + 3] = 255
+  }
+  const logo = { width: 4, height: 4, data }
+  const qr = encode('https://github.com/lirenjie95/IamChinese', { ecc: 'H' })
+  const png = toPng(qr, { scale: 8, quiet: 4, logo })
+
+  assert.equal(png[25], 2, '带 logo 应写成真彩（colorType=2）')
+  const decoded = decodePng(png)
+  assert.equal(decoded.width, decoded.height)
+  const center = decoded.width / 2 | 0
+  const at = (decoded.data[(center * decoded.width + center) * 4])
+  assert.equal(at, 255, '中心应是 logo 的红色，而不是二维码的黑块')
+  assert.equal(decoded.data[(center * decoded.width + center) * 4 + 2], 0, '蓝通道应为 0')
+})
+
+test('不带 logo 时仍是灰度 PNG', () => {
+  const qr = encode('abc')
+  const png = toPng(qr, { scale: 4 })
+  assert.equal(png[25], 0, 'colorType 应为 0（灰度）')
+})
+
+test('decodePng 读得回自己写的 PNG', () => {
+  const qr = encode('roundtrip')
+  const png = toPng(qr, { scale: 3, quiet: 2 })
+  // 灰度不在 decodePng 支持范围内，先明确它该报错，别静默出错图
+  assert.throws(() => decodePng(png), /RGB\/RGBA/)
+  assert.throws(() => decodePng(Buffer.from('not a png')), /不是 PNG/)
 })

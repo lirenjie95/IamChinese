@@ -7,12 +7,13 @@
  */
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
 
 import { landingPage, startShareServer } from '../scripts/share-server.mjs'
+import { decodePng } from '../scripts/lib/qr.js'
 
 /** 包名里的版本号跟着 package.json 走，发版时不改测试。 */
 const { version: VERSION } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
@@ -109,8 +110,7 @@ test('起服务：首页 200、包能下、qr.png 是 PNG、别的路径 404', a
   }
 })
 
-test('qr.png 跟着 ?url= 变，不同地址出不同图', async () => {
-  const dir = await fakeDist()
+test('qr.png 跟着 ?url= 变，不同地址出不同图', async () => {  const dir = await fakeDist()
   const started = await startShareServer({ port: 0, dir })
   try {
     const one = Buffer.from(await (await fetch(new URL('qr.png?url=https://a.example/', started.baseUrl))).arrayBuffer())
@@ -122,8 +122,28 @@ test('qr.png 跟着 ?url= 变，不同地址出不同图', async () => {
   }
 })
 
-test('目录里没有包时明确报错，而不是起一个空页面', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'iamchinese-empty-'))
+test('投放目录里放了圆章时，页面上的码带中心 logo（真彩 PNG）', async () => {
+  const dir = await fakeDist()
+  const source = await readFile(new URL('../assets/logo-mark.png', import.meta.url))
+  await writeFile(join(dir, 'logo-mark.png'), source)
+
+  const started = await startShareServer({ port: 0, dir })
+  try {
+    const bytes = Buffer.from(await (await fetch(new URL('qr.png', started.baseUrl))).arrayBuffer())
+    // IHDR 的第 9 字节是颜色类型：0=灰度，2=真彩。带 logo 时必须走真彩分支
+    assert.equal(bytes[25], 2, '带 logo 的码应是真彩 PNG')
+    const decoded = decodePng(bytes)
+    const center = (decoded.width / 2 | 0)
+    const pixel = decoded.data.subarray((center * decoded.width + center) * 4, (center * decoded.width + center) * 4 + 3)
+    assert.notDeepEqual([...pixel], [0, 0, 0], '中心不该是二维码的黑块')
+    assert.notDeepEqual([...pixel], [255, 255, 255], '中心也不该还是空白')
+  } finally {
+    await started.close()
+    await rm(dir, { recursive: true, force: true })
+  }
+})
+
+test('目录里没有包时明确报错，而不是起一个空页面', async () => {  const dir = await mkdtemp(join(tmpdir(), 'iamchinese-empty-'))
   await assert.rejects(() => startShareServer({ port: 0, dir }), /先跑 npm run dist/)
   await rm(dir, { recursive: true, force: true })
 })

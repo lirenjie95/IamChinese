@@ -88,8 +88,9 @@ npm run share                                    # 起本机分发页，手机�
 `iamchinese_share`（导出分享包），外加一份 `/iamchinese` 技能讲清它们之间的顺序。
 Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/iamchinese/SKILL.md` 讲顺序、`commands/` 给三个 slash 命令（persona/apply/share），CLI 是同一份。
 
-二维码是这个包里自己编的（`scripts/lib/qr.js`，1–6 版、字节模式、纠错 M/Q，零依赖）。
-默认指向仓库地址，发出去的那张码换台机器也有效：
+二维码是这个包里自己编的（`scripts/lib/qr.js`，1–6 版、字节模式、纠错 M/Q/H，零依赖）。
+默认指向仓库地址，发出去的那张码换台机器也有效；中心那张圆章就是仓库的 logo，贴图时自动切到
+H 级纠错并挖白，扫出来内容与纯黑白版完全一致（`--no-logo` 可关）：
 
 <img src="assets/qr-repo.png" width="200" alt="指向本仓库的二维码">
 

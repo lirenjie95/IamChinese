@@ -230,19 +230,20 @@ async function main() {
   const qr = await writeQr({ url: REPO_URL, out: join(dist, 'qr.png'), scale: 12 })
   const qrLan = await writeQr({ url: guessUrl(), out: join(dist, 'qr-lan.png'), scale: 10 })
 
-  // 5. 头图与站点图标也落到 dist/：分发页直接发这个目录，别让它反过来依赖仓库。
-  for (const name of ['logo.png', 'favicon.ico']) {
+  // 5. 头图、站点图标、二维码中心那张圆章也落到 dist/：分发页直接发这个目录，
+  //    别让它反过来依赖仓库里那一层。
+  for (const name of ['logo.png', 'logo-mark.png', 'favicon.ico']) {
     const from = resolve(root, 'assets', name)
     if (existsSync(from)) await cp(from, join(dist, name))
   }
 
   // 仓库里那张（README 引用它）单独落到 assets/，dist/ 整体不进版本库
-  const assets = resolve(root, '..', 'assets')
+  const assets = resolve(root, '..', '..', 'assets')
   if (existsSync(assets)) {
     await writeQr({ url: REPO_URL, out: join(assets, 'qr-repo.png'), scale: 10 })
   }
 
-  const files = [packed, 'install.ps1', 'install.sh', '发给朋友.md', zipped ? zipName : 'claude-plugin/', 'qr.png', 'qr-lan.png', 'logo.png', 'favicon.ico']
+  const files = [packed, 'install.ps1', 'install.sh', '发给朋友.md', zipped ? zipName : 'claude-plugin/', 'qr.png', 'qr-lan.png', 'logo.png', 'logo-mark.png', 'favicon.ico']
   process.stdout.write(`\n产物（${dist}）：\n${files.map(item => `  - ${item}`).join('\n')}\n`)
   if (!zipped) process.stdout.write('\n（没打成 zip，claude-plugin/ 目录可以直接装，不影响使用。）\n')
   process.stdout.write(`\nqr.png → ${qr.url}\nqr-lan.png → ${qrLan.url}\n`)

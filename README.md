@@ -58,8 +58,9 @@ cd IamChinese
 python -m unittest discover -s tests -t .          # 137 cases, no network needed
 ```
 
-Or scan the QR code in `plugins/iamchinese/dist/qr.png` — it points at this repository (see
-"Two shells" below for how that code is generated).
+Or scan the QR code in `plugins/iamchinese/dist/qr.png` — it points at this repository, with the
+logo sitting in the middle (H-level error correction absorbs the hole; `--no-logo` gives you the
+plain black-and-white code). See "Two shells" below for how it is generated.
 
 `--seed` pins the persona (default `20261019`); the same seed reproduces byte-identical output.
 

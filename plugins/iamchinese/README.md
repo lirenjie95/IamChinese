@@ -155,9 +155,11 @@ node scripts/share-qr.mjs --url https://你的域名/ --out qr.png   # 换成公
 python scripts/verify-qr.py --png qr.png --expect https://你的域名/   # 用 OpenCV 验一遍真能扫
 ```
 
-编码器只做 1–6 版、字节模式、纠错 M/Q（Q 级 6 版放 74 字节，够放 URL），超长直接报错不偷偷降级。
-`test/qr.test.mjs` 验结构（定位图案、格式信息、掩码罚分），能不能被扫出来由 `scripts/verify-qr.py`
-用 OpenCV 的真解码器验，12 条边界用例（6 版本 × M/Q，正好塞满容量）全过才算数。
+编码器只做 1–6 版、字节模式、纠错 M/Q/H，超长直接报错不偷偷降级。生成的码默认在中心贴一张
+`assets/logo-mark.png`（就是仓库那个圆章），贴图时自动切到 **H 级纠错**、按 26% 边长挖白再贴，
+扫出来跟纯黑白版完全一样；想要素净的纯色码就 `--no-logo`。`test/qr.test.mjs` 验结构（定位图案、
+格式信息、掩码罚分、挖洞位置），能不能被扫出来由 `scripts/verify-qr.py` 用 OpenCV 的真解码器验，
+12 条边界用例（6 版本 × M/Q，正好塞满容量）全过才算数。
 
 ## 它不做什么
 

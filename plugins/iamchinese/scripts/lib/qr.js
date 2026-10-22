@@ -11,14 +11,20 @@
  * 正确性由 `test/qr.test.mjs` 保证，真正能不能扫出来由 `scripts/verify-qr.py`
  * 用 OpenCV 的真解码器验（见 README）。
  */
-import { deflateSync } from 'node:zlib'
+import { deflateSync, inflateSync } from 'node:zlib'
 
 const MAX_VERSION = 6
 
-/** 各版本在 M / Q 下能放的「字节数」（不是码字数）。 */
+/**
+ * 各版本能放的「字节数」（不是码字数）。
+ *
+ * H 级不是为了更耐脏，是为了中心能挖个洞放 logo：H 能纠回约 30% 的受损码字，
+ * 一个直径占宽度 22% 的方块刚好在余额内。
+ */
 const BYTE_CAPACITY = {
   M: [0, 14, 26, 42, 62, 84, 106],
   Q: [0, 11, 20, 32, 46, 60, 74],
+  H: [0, 7, 14, 24, 34, 44, 58],
 }
 
 /** 版本 → 总码字数。 */
@@ -28,12 +34,14 @@ const TOTAL_CODEWORDS = [0, 26, 44, 70, 100, 134, 172]
 const ECC_PER_BLOCK = {
   M: [0, 10, 16, 26, 18, 24, 16],
   Q: [0, 13, 22, 18, 26, 18, 24],
+  H: [0, 17, 28, 22, 16, 22, 28],
 }
 
 /** 版本 → 分块方式：[块数, 每块数据码字数] 的正数对。 */
 const BLOCKS = {
   M: [null, [1, 16], [1, 28], [1, 44], [2, 32], [2, 43], [4, 27]],
   Q: [null, [1, 13], [1, 22], [2, 17], [2, 24], [2, 15, 2, 16], [4, 19]],
+  H: [null, [1, 9], [1, 16], [2, 13], [4, 9], [2, 11, 2, 12], [4, 15]],
 }
 
 /** 版本 → 对齐图案的圆心坐标（1 版没有）。 */
@@ -405,38 +413,92 @@ function chunk(type, data) {
 }
 
 /**
- * 生成 8 位灰度 PNG（零依赖：deflate 用 zlib，块结构自己拼）。
+ * 生成 PNG（零依赖：deflate 用 zlib，块结构自己拼）。
+ *
+ * 不带 logo 时出 8 位灰度（体积小、兼容性最好）；带 logo 时出 8 位 RGB，
+ * 并先把中心那块挖成白色再贴图 —— 挖掉的部分靠 H 级纠错补回来。
  *
  * @param {ReturnType<typeof encode>} qr
- * @param {{scale?: number, quiet?: number}} options scale=每个模块的像素，quiet=四周留白模块数
+ * @param {{scale?: number, quiet?: number, logo?: {width: number, height: number, data: Buffer}, logoRatio?: number}} options
+ *   scale=每个模块的像素，quiet=四周留白模块数，logo=decodePng() 的结果，
+ *   logoRatio=logo 占二维码边长的比例（默认 0.26；H 级挖掉这一块仍能纠回）
  */
 export function toPng(qr, options = {}) {
   const scale = options.scale ?? 8
   const quiet = options.quiet ?? 4
   const dimension = qr.size + quiet * 2
   const pixels = dimension * scale
-
-  const raw = Buffer.alloc(pixels * (pixels + 1))
-  for (let y = 0; y < pixels; y++) {
-    const rowStart = y * (pixels + 1)
-    raw[rowStart] = 0 // 过滤器：None
-    for (let x = 0; x < pixels; x++) {
-      const moduleX = Math.floor(x / scale) - quiet
-      const moduleY = Math.floor(y / scale) - quiet
-      const inside = moduleX >= 0 && moduleY >= 0 && moduleX < qr.size && moduleY < qr.size
-      const dark = inside && qr.modules[moduleY][moduleX]
-      raw[rowStart + 1 + x] = dark ? 0 : 255
-    }
-  }
+  const logo = options.logo ?? null
+  const logoRatio = options.logoRatio ?? 0.26
 
   const ihdr = Buffer.alloc(13)
   ihdr.writeUInt32BE(pixels, 0)
   ihdr.writeUInt32BE(pixels, 4)
   ihdr[8] = 8 // 位深
-  ihdr[9] = 0 // 灰度
+  ihdr[9] = logo ? 2 : 0 // 2=真彩 RGB，0=灰度
   ihdr[10] = 0
   ihdr[11] = 0
   ihdr[12] = 0
+
+  const channels = logo ? 3 : 1
+  const raw = Buffer.alloc(pixels * (pixels * channels + 1))
+
+  // 挖洞的模块范围：以二维码中心为心，取奇数边长，保证四边对称
+  const span = logo ? Math.max(5, Math.round(qr.size * logoRatio) | 1) : 0
+  const holeFrom = logo ? Math.floor((qr.size - span) / 2) : 0
+  const holeTo = logo ? holeFrom + span - 1 : -1
+
+  // logo 在像素坐标里的落点：洞内再留 1 个模块白边，贴图不顶到黑模块
+  const margin = logo ? scale : 0
+  const boxX = (holeFrom + quiet) * scale + margin
+  const boxY = (holeFrom + quiet) * scale + margin
+  const boxW = span * scale - margin * 2
+  const boxH = span * scale - margin * 2
+
+  const put = (offset, value) => {
+    if (channels === 1) {
+      raw[offset] = value
+    } else {
+      raw[offset] = value
+      raw[offset + 1] = value
+      raw[offset + 2] = value
+    }
+  }
+
+  for (let y = 0; y < pixels; y++) {
+    const rowStart = y * (pixels * channels + 1)
+    raw[rowStart] = 0 // 过滤器：None
+    for (let x = 0; x < pixels; x++) {
+      const moduleX = Math.floor(x / scale) - quiet
+      const moduleY = Math.floor(y / scale) - quiet
+      const inside = moduleX >= 0 && moduleY >= 0 && moduleX < qr.size && moduleY < qr.size
+      const inHole =
+        logo && moduleX >= holeFrom && moduleX <= holeTo && moduleY >= holeFrom && moduleY <= holeTo
+      const dark = inside && !inHole && qr.modules[moduleY][moduleX]
+      put(rowStart + 1 + x * channels, dark ? 0 : 255)
+    }
+  }
+
+  if (logo) {
+    for (let y = 0; y < boxH; y++) {
+      const py = boxY + y
+      if (py < 0 || py >= pixels) continue
+      for (let x = 0; x < boxW; x++) {
+        const px = boxX + x
+        if (px < 0 || px >= pixels) continue
+        const sx = Math.min(logo.width - 1, Math.floor((x / boxW) * logo.width))
+        const sy = Math.min(logo.height - 1, Math.floor((y / boxH) * logo.height))
+        const si = (sy * logo.width + sx) * 4
+        const alpha = logo.data[si + 3] / 255
+        if (alpha === 0) continue
+        const offset = py * (pixels * 3 + 1) + 1 + px * 3
+        for (let c = 0; c < 3; c++) {
+          const fg = logo.data[si + c]
+          raw[offset + c] = Math.round(fg * alpha + 255 * (1 - alpha))
+        }
+      }
+    }
+  }
 
   return Buffer.concat([
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
@@ -444,6 +506,89 @@ export function toPng(qr, options = {}) {
     chunk('IDAT', deflateSync(raw, { level: 9 })),
     chunk('IEND', Buffer.alloc(0)),
   ])
+}
+
+/**
+ * 读 8 位 RGB/RGBA、非隔行的 PNG 成 {width, height, data(RGBA)}。
+ *
+ * 只需要喂 logo 一种输入，所以只支持这几种最常见的形式；遇到别的直接抛错，
+ * 不做静默降级——静默降级的后果是二维码中心贴一块错色方块。
+ */
+export function decodePng(buffer) {
+  const signature = buffer.subarray(0, 8)
+  if (signature.toString('hex') !== '89504e470d0a1a0a') throw new Error('不是 PNG 文件')
+
+  let offset = 8
+  let width = 0
+  let height = 0
+  let colorType = 0
+  let bitDepth = 0
+  let interlace = 0
+  const idat = []
+
+  while (offset < buffer.length) {
+    const length = buffer.readUInt32BE(offset)
+    const type = buffer.toString('ascii', offset + 4, offset + 8)
+    const data = buffer.subarray(offset + 8, offset + 8 + length)
+    offset += 12 + length
+
+    if (type === 'IHDR') {
+      width = data.readUInt32BE(0)
+      height = data.readUInt32BE(4)
+      bitDepth = data[8]
+      colorType = data[9]
+      interlace = data[12]
+    } else if (type === 'IDAT') {
+      idat.push(Buffer.from(data))
+    } else if (type === 'IEND') {
+      break
+    }
+  }
+
+  if (bitDepth !== 8) throw new Error(`只支持 8 位深，收到 ${bitDepth}`)
+  if (interlace !== 0) throw new Error('不支持隔行 PNG')
+  if (colorType !== 2 && colorType !== 6) throw new Error(`只支持 RGB/RGBA，收到类型 ${colorType}`)
+
+  const channels = colorType === 6 ? 4 : 3
+  const stride = width * channels
+  const inflated = inflateSync(Buffer.concat(idat))
+  const rgba = Buffer.alloc(width * height * 4)
+  let previous = Buffer.alloc(stride)
+
+  for (let y = 0; y < height; y++) {
+    const filter = inflated[y * (stride + 1)]
+    const line = Buffer.from(inflated.subarray(y * (stride + 1) + 1, (y + 1) * (stride + 1)))
+    for (let i = 0; i < stride; i++) {
+      const a = i >= channels ? line[i - channels] : 0
+      const b = previous[i]
+      const c = i >= channels ? previous[i - channels] : 0
+      if (filter === 1) line[i] = (line[i] + a) & 0xff
+      else if (filter === 2) line[i] = (line[i] + b) & 0xff
+      else if (filter === 3) line[i] = (line[i] + ((a + b) >> 1)) & 0xff
+      else if (filter === 4) line[i] = (line[i] + paeth(a, b, c)) & 0xff
+      else if (filter !== 0) throw new Error(`未知的行过滤器 ${filter}`)
+    }
+    for (let x = 0; x < width; x++) {
+      const from = x * channels
+      const to = (y * width + x) * 4
+      rgba[to] = line[from]
+      rgba[to + 1] = line[from + 1]
+      rgba[to + 2] = line[from + 2]
+      rgba[to + 3] = channels === 4 ? line[from + 3] : 255
+    }
+    previous = line
+  }
+
+  return { width, height, data: rgba }
+}
+
+const paeth = (a, b, c) => {
+  const p = a + b - c
+  const pa = Math.abs(p - a)
+  const pb = Math.abs(p - b)
+  const pc = Math.abs(p - c)
+  if (pa <= pb && pa <= pc) return a
+  return pb <= pc ? b : c
 }
 
 /** 文本形式的二维码，终端里也能看（深色用两个字符，扫不出但便于核对形状）。 */
