@@ -8,7 +8,7 @@
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](#快速开始)
 [![node](https://img.shields.io/badge/node-%E2%89%A520-informational)](#两个外壳dsh-插件--claude-插件)
-[![npm](https://img.shields.io/badge/npm-dsh--cn--persona-cb3837)](https://www.npmjs.com/package/dsh-cn-persona)
+[![npm](https://img.shields.io/badge/npm-dsh--cn--persona-cb3837)](https://www.npmjs.com/package/iamchinese)
 
 把 `regiongate` 的坐标轴整个翻过来：**默认用户是一个住在国内的普通人**——家宽或 4G 出口、
 `zh-Hans-CN`、`Asia/Shanghai`；北美与西欧反而落在服务范围之外。
@@ -16,7 +16,7 @@
 原来的版本默认用户在美国：Comcast 家宽、`America/Los_Angeles`、`en-US`，`CN` 挂在
 `restricted` 里，界面文案是"你的网络出口位于 CN，该地区不在服务支持范围内"。
 
-零第三方依赖，`unittest` 跑 137 个用例，断网可跑；`plugins/cn-persona/` 里另有一套零依赖的 JS 实现与 80 个用例，
+零第三方依赖，`unittest` 跑 137 个用例，断网可跑；`plugins/iamchinese/` 里另有一套零依赖的 JS 实现与 80 个用例，
 能装进 DSH 或 Claude Code 当插件用。
 
 装进 DSH / Claude 之后，**默认把你当成中国大陆用户**：会话里说简体中文，日期按
@@ -66,16 +66,16 @@ stdout/stderr 强制 UTF-8，若仍异常先 `chcp 65001`。
 
 ## 两个外壳：DSH 插件 / Claude 插件
 
-`plugins/cn-persona/` 是同一套人设逻辑的 JS 版，装到宿主里就能**在会话中直接调用**，也能打包发给朋友。
+`plugins/iamchinese/` 是同一套人设逻辑的 JS 版，装到宿主里就能**在会话中直接调用**，也能打包发给朋友。
 
 ```bash
-cd plugins/cn-persona
+cd plugins/iamchinese
 node --test                                      # 80 个用例，零依赖
 
 # 装进 DSH（装完 dsh 会把包自动挂进 profile 的层栈，不用手改配置）
 dsh plugin --profile web add D:\IamChinese\plugin
 # 或用打好的包，朋友那边就是这条路
-dsh plugin --profile web add .\dist\dsh-cn-persona-0.1.0.tgz
+dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz
 
 npm run dist                                     # 产出 tgz + zip + install.ps1 + 发给朋友.md + 两张码
 npm run share                                    # 起本机分发页，手机扫码就能下包（默认 8848）
@@ -83,8 +83,8 @@ npm run share                                    # 起本机分发页，手机�
 
 装好之后会话里多出五个工具：`cn_persona`（生成）、`cn_persona_plan`（清单）、
 `cn_persona_apply`（写三件套）、`cn_persona_check`（六项自洽 + 环境对比）、
-`cn_persona_share`（导出分享包），外加一份 `/cn-persona` 技能讲清它们之间的顺序。
-Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/cn-persona/SKILL.md` 讲顺序、`commands/` 给三个 slash 命令（persona/apply/share），CLI 是同一份。
+`cn_persona_share`（导出分享包），外加一份 `/iamchinese` 技能讲清它们之间的顺序。
+Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/iamchinese/SKILL.md` 讲顺序、`commands/` 给三个 slash 命令（persona/apply/share），CLI 是同一份。
 
 二维码是这个包里自己编的（`scripts/lib/qr.js`，1–6 版、字节模式、纠错 M/Q，零依赖）。
 默认指向仓库地址，发出去的那张码换台机器也有效：
@@ -101,14 +101,14 @@ Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/cn-persona/SKIL
 
 | 途径 | 命令 |
 |---|---|
-| DSH 插件，走 npm | `dsh plugin --profile web add dsh-cn-persona` |
-| DSH 插件，走 Release 资产 | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/dsh-cn-persona-0.1.0.tgz` |
-| DSH 插件，走本地 tgz | `dsh plugin --profile web add .\dist\dsh-cn-persona-0.1.0.tgz` |
-| Claude Code，把本仓库当 marketplace | `claude plugin marketplace add lirenjie95/IamChinese`，再 `claude plugin install cn-persona@iamchinese` |
-| Claude Code，会话里 | `/plugin marketplace add lirenjie95/IamChinese`，再 `/plugin install cn-persona@iamchinese` |
-| 其他 | `plugins/cn-persona/dist/`：tgz、Claude zip、`install.ps1`、`发给朋友.md`、二维码 |
+| DSH 插件，走 npm | `dsh plugin --profile web add iamchinese` |
+| DSH 插件，走 Release 资产 | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/iamchinese-0.2.0.tgz` |
+| DSH 插件，走本地 tgz | `dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz` |
+| Claude Code，把本仓库当 marketplace | `claude plugin marketplace add lirenjie95/IamChinese`，再 `claude plugin install iamchinese@iamchinese` |
+| Claude Code，会话里 | `/plugin marketplace add lirenjie95/IamChinese`，再 `/plugin install iamchinese@iamchinese` |
+| 其他 | `plugins/iamchinese/dist/`：tgz、Claude zip、`install.ps1`、`发给朋友.md`、二维码 |
 
-marketplace 清单在仓库根的 `.claude-plugin/marketplace.json`，条目指向 `./plugins/cn-persona`，那边另有
+marketplace 清单在仓库根的 `.claude-plugin/marketplace.json`，条目指向 `./plugins/iamchinese`，那边另有
 自己的 `.claude-plugin/plugin.json`。装了 Claude CLI 的话 `claude plugin validate .` 会把两份
 清单一起校验。
 
@@ -117,7 +117,7 @@ marketplace 清单在仓库根的 `.claude-plugin/marketplace.json`，条目指�
 `data/plugins/lirenjie95__IamChinese--plugin.yml`，一个文件就是全部投稿）、release notes 模板，
 以及提 PR 前要核对的几条规则。
 
-`plugins/cn-persona/README.md` 里有安装、卸载、分享和「它不做什么」的完整说明。两个版本**不共享 seed
+`plugins/iamchinese/README.md` 里有安装、卸载、分享和「它不做什么」的完整说明。两个版本**不共享 seed
 语义**：同一个种子在 Python 版和 JS 版结果不同，要跨版本对齐就传完整档案。
 
 ---
@@ -218,7 +218,7 @@ status / confidence / 可否申诉 / 下一步动作的唯一真源：
 | 套件 | 数量 | 命令 |
 ---|---|---|
 | Python 内核 | 137 | `python -m unittest discover -s tests -t .` |
-| JS 插件 | 80 | `cd plugins/cn-persona && node --test` |
+| JS 插件 | 80 | `cd plugins/iamchinese && node --test` |
 
 JS 那套里有 4 条直接调宿主的真参数/输出校验器，2 条在真 cordis 上下文里挂载插件，
 12 条覆盖二维码编码器，7 条走 CLI。
@@ -232,7 +232,7 @@ README.md                英文说明（GitHub 默认展示）
 README.zh-CN.md          简体中文说明
 LICENSE                  MIT
 .claude-plugin/
-└── marketplace.json     Claude Code marketplace 清单（条目指向 ./plugins/cn-persona）
+└── marketplace.json     Claude Code marketplace 清单（条目指向 ./plugins/iamchinese）
 marketplace/
 ├── lirenjie95__IamChinese--plugin.yml   Awesome DSH Plugin 的条目（原样复制去提 PR）
 ├── release-notes.md                     GitHub Release 正文
@@ -271,7 +271,7 @@ assets/                  打好的成品 logo（不含源图，也不含生成�
 > 分发页头图与站点图标、Release 正文、npm 包里的 `assets/`。
 
 plugins/                 JS 版；每个子目录都是可独立安装的插件
-└── cn-persona/          DSH 插件 + Claude 插件，同一份逻辑两个外壳
+└── iamchinese/          DSH 插件 + Claude 插件，同一份逻辑两个外壳
     ├── lib/core/        纯逻辑（人设、静态表、PRNG、环境、档案），无 IO
     ├── lib/             宿主装配（index / mount / tools / skill / prompt）
     ├── bin/             CLI：persona / plan / apply / verify / share / undo

@@ -13,7 +13,7 @@
    `data/plugins/lirenjie95__IamChinese--plugin.yml`。
 2. 给对方仓库提一个 PR，只加这一个文件。
 3. PR 前确认三件事：
-   - `plugins/cn-persona/package.json` 里有 `dsh.bundle.patch` —— 有（CI 第一道就查这个，只有 `dsh.client`
+   - `plugins/iamchinese/package.json` 里有 `dsh.bundle.patch` —— 有（CI 第一道就查这个，只有 `dsh.client`
      会被拒）。
    - 仓库创建满 1 天 —— CI 自动查。刚建好就提会被拦，隔天再提即可。
    - 仓库打了 `dsh-plugin` topic —— 见下面 gh 命令。
@@ -24,7 +24,7 @@ gh repo edit lirenjie95/IamChinese --add-topic dsh-plugin --add-topic claude-cod
 ```
 
 他们推荐把包发到 npm 或挂一个 GitHub Release 的 `.tgz`，这样市场里给的是一行安装命令而不是
-源码构建。v0.1.0 的 Release 已经建好（见第三节），条目里的 `tarball:` 就指向它——钉住 tag，
+源码构建。v0.2.0 的 Release 已经建好（见第三节），条目里的 `tarball:` 就指向它——钉住 tag，
 不用 `latest/download/`，因为后者只解析 `latest`、文件名却照字面取，下次发版就 404。
 
 一个 PR 最多 3 条，描述必须与代码对得上（「五个工具、六项校验」就是他们核对的数字）。
@@ -35,12 +35,12 @@ gh repo edit lirenjie95/IamChinese --add-topic dsh-plugin --add-topic claude-cod
 
 ```text
 /plugin marketplace add lirenjie95/IamChinese
-/plugin install cn-persona@iamchinese
+/plugin install iamchinese@iamchinese
 ```
 
-插件本体在 `plugins/cn-persona/`，清单在 `plugins/cn-persona/.claude-plugin/plugin.json`，skills 在
-`plugins/cn-persona/skills/cn-persona/`，slash 命令在 `plugins/cn-persona/commands/`，SessionStart hook 在
-`plugins/cn-persona/hooks/hooks.json`。不装市场也能单独用：`plugins/cn-persona/` 目录本身就是插件目录。
+插件本体在 `plugins/iamchinese/`，清单在 `plugins/iamchinese/.claude-plugin/plugin.json`，skills 在
+`plugins/iamchinese/skills/iamchinese/`，slash 命令在 `plugins/iamchinese/commands/`，SessionStart hook 在
+`plugins/iamchinese/hooks/hooks.json`。不装市场也能单独用：`plugins/iamchinese/` 目录本身就是插件目录。
 
 本地校验（需要本机有 `claude` 命令，这台机器上没有，装好再跑）：
 
@@ -57,20 +57,20 @@ claude plugin validate .
 `npm run dist` 产出的东西直接当 release 资产：
 
 ```powershell
-cd plugins/cn-persona
+cd plugins/iamchinese
 npm run dist
 cd ..
-gh release create v0.1.0 `
-  plugins/cn-persona/dist/dsh-cn-persona-0.1.0.tgz `
-  plugins/cn-persona/dist/cn-persona-claude.zip `
-  plugins/cn-persona/dist/install.ps1 `
-  plugins/cn-persona/dist/install.sh `
-  --title "v0.1.0" --notes-file marketplace/release-notes.md
+gh release create v0.2.0 `
+  plugins/iamchinese/dist/iamchinese-0.2.0.tgz `
+  plugins/iamchinese/dist/iamchinese-claude.zip `
+  plugins/iamchinese/dist/install.ps1 `
+  plugins/iamchinese/dist/install.sh `
+  --title "v0.2.0" --notes-file marketplace/release-notes.md
 ```
 
 ## 四、npm（可选；国内网络下最容易卡的一步）
 
-`plugins/cn-persona/package.json` 里 `publishConfig` 已经钉死官方源
+`plugins/iamchinese/package.json` 里 `publishConfig` 已经钉死官方源
 （`registry: https://registry.npmjs.org/`、`access: public`），所以本机全局 registry 指向淘宝镜像也能发。
 卡人的地方全在“拿登录态”：
 
@@ -93,5 +93,5 @@ npm publish --registry https://registry.npmjs.org/ --access public
 
 - 别在 yml 里手写 `npm:` 字段 —— 会被校验拒绝，npm 映射由他们从 registry 自动采集。
 - 描述里有 `: `（冒号加空格）必须加引号，否则 YAML 当成嵌套键。我们这份已经加了。
-- 截图想控制顺序就放 `plugins/cn-persona/screenshots.json`（1–8 张，相对路径不许出插件目录）；不声明也
+- 截图想控制顺序就放 `plugins/iamchinese/screenshots.json`（1–8 张，相对路径不许出插件目录）；不声明也
   可以，市场会从 README 里抽图。

@@ -8,23 +8,23 @@
 
 | 项 | 值 |
 | --- | --- |
-| 插件目录 | `plugins/cn-persona/`（含 `.claude-plugin/plugin.json`、`skills/`、`commands/`、`hooks/`） |
-| 市场清单 | 仓库根 `.claude-plugin/marketplace.json`，市场名 `iamchinese`，条目名 `cn-persona` |
-| 本地验证 | `/plugin marketplace add lirenjie95/IamChinese` → `/plugin install cn-persona@iamchinese` |
+| 插件目录 | `plugins/iamchinese/`（含 `.claude-plugin/plugin.json`、`skills/`、`commands/`、`hooks/`） |
+| 市场清单 | 仓库根 `.claude-plugin/marketplace.json`，市场名 `iamchinese`，条目名 `iamchinese` |
+| 本地验证 | `/plugin marketplace add lirenjie95/IamChinese` → `/plugin install iamchinese@iamchinese` |
 | 许可证 | MIT（`LICENSE`） |
-| 版本 | 0.1.0 |
+| 版本 | 0.2.0 |
 
-卸载/回滚：`/plugin uninstall cn-persona@iamchinese`。
+卸载/回滚：`/plugin uninstall iamchinese@iamchinese`。
 
 ## 表单逐项
 
-**Name**：`cn-persona`
+**Name**：`iamchinese`
 
-**Display name**：`CN Persona`
+**Display name**：`IamChinese`
 
 **Repository URL**：`https://github.com/lirenjie95/IamChinese`
 
-**Plugin subdirectory**：`plugins/cn-persona`
+**Plugin subdirectory**：`plugins/iamchinese`
 
 **Marketplace name**：`iamchinese`
 
@@ -72,5 +72,5 @@ Treat the session as a mainland-China user — zh-Hans-CN, Asia/Shanghai, ISO da
 ## 提交之后
 
 - 通过审核后会被同步进 `anthropics/claude-plugins-community`（夜间同步），用户侧命令变成
-  `claude plugin install cn-persona@claude-community`。
+  `claude plugin install iamchinese@claude-community`。
 - 在那之前，任何人已经可以从本仓库直接装：`/plugin marketplace add lirenjie95/IamChinese`。

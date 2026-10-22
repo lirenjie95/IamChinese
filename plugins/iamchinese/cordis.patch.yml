@@ -1,0 +1,8 @@
+# iamchinese 的 bundle patch：把插件挂进 profile 的层栈。
+#
+# 顶层必须是 YAML 数组。写成映射（根上是 bundle:/insert:）时 loader 会直接
+# 拒绝：must be a top-level YAML array of loader patch entries。
+# id 在同一个 profile 内必须唯一，重复会被判定为 duplicate entry id。
+- insert:
+    - id: iamchinese
+      name: 'iamchinese'

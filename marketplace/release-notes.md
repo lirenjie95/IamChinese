@@ -1,6 +1,11 @@
-# v0.1.0
+# v0.2.0
 
 第一个版本：把「这台机器上的助手把你当成中国大陆用户」做成一个能装、能验、能发给别人的插件。
+
+## 改名
+
+插件、npm 包、CLI、目录统一叫 `iamchinese` / IamChinese（原名 `cn-persona` / `dsh-cn-persona`）。
+工具 id 仍是 `cn_persona*`：它描述的是「中国人设」这件事，不跟着品牌走，也不该逼着调用方改提示词。
 
 ## 装上会发生什么
 
@@ -14,23 +19,23 @@
 DSH：
 
 ```powershell
-dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/download/v0.1.0/dsh-cn-persona-0.1.0.tgz
+dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/download/v0.2.0/iamchinese-0.2.0.tgz
 ```
 
 Claude Code：
 
 ```text
 /plugin marketplace add lirenjie95/IamChinese
-/plugin install cn-persona@iamchinese
+/plugin install iamchinese@iamchinese
 ```
 
 ## 里面有什么
 
 - 五个工具：`cn_persona` / `cn_persona_plan` / `cn_persona_apply` / `cn_persona_check` /
   `cn_persona_share`
-- 一个技能 `cn-persona`
-- 一个 CLI：`cn-persona persona|plan|apply|verify|share|undo`
-- Python 内核（地区判定、文案、诊断包）+ 137 个用例；JS 插件 80 个用例
+- 一个技能 `iamchinese`
+- 一个 CLI：`iamchinese persona|plan|apply|verify|share|undo`
+- Python 内核（地区判定、文案、诊断包）+ 137 个用例；JS 插件 81 个用例
 
 ## 它不做什么
 

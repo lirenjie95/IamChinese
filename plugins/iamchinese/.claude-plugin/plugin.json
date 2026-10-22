@@ -1,0 +1,19 @@
+{
+  "name": "iamchinese",
+  "version": "0.2.0",
+  "description": "Treat the session as a mainland-China user (zh-Hans-CN, Asia/Shanghai, YYYY-MM-DD, ¥ CNY) and generate a self-consistent test persona: GB 11643 ID with a real check digit, phone prefix matched to carrier ASN, region code matched to address, locale matched to time zone.",
+  "author": {
+    "name": "YG"
+  },
+  "homepage": "https://github.com/lirenjie95/IamChinese/tree/main/plugins/iamchinese",
+  "repository": "https://github.com/lirenjie95/IamChinese",
+  "license": "MIT",
+  "keywords": [
+    "persona",
+    "locale",
+    "i18n",
+    "china",
+    "zh-cn",
+    "test-fixture"
+  ]
+}

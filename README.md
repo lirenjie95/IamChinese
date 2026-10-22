@@ -8,7 +8,7 @@
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](#quick-start)
 [![node](https://img.shields.io/badge/node-%E2%89%A520-informational)](#two-shells-dsh-plugin--claude-code-plugin)
-[![npm](https://img.shields.io/badge/npm-dsh--cn--persona-cb3837)](https://www.npmjs.com/package/dsh-cn-persona)
+[![npm](https://img.shields.io/badge/npm-dsh--cn--persona-cb3837)](https://www.npmjs.com/package/iamchinese)
 
 `regiongate` had its coordinate system flipped. The default user is now an ordinary person
 living in mainland China: home broadband or 4G egress, `zh-Hans-CN`, `Asia/Shanghai`. North
@@ -18,7 +18,7 @@ The original build assumed the opposite: Comcast cable, `America/Los_Angeles`, `
 `CN` sitting in `restricted` and a screen that read "your network egress is in CN, this region
 is not supported."
 
-No third-party dependencies. 137 `unittest` cases run offline in about 0.7 s. `plugins/cn-persona/` holds a
+No third-party dependencies. 137 `unittest` cases run offline in about 0.7 s. `plugins/iamchinese/` holds a
 second, dependency-free JavaScript implementation with 80 cases that installs into DeepSeek
 Harness or Claude Code as a plugin.
 
@@ -56,7 +56,7 @@ cd IamChinese
 python -m unittest discover -s tests -t .          # 137 cases, no network needed
 ```
 
-Or scan the QR code in `plugins/cn-persona/dist/qr.png` — it points at this repository (see
+Or scan the QR code in `plugins/iamchinese/dist/qr.png` — it points at this repository (see
 "Two shells" below for how that code is generated).
 
 `--seed` pins the persona (default `20261019`); the same seed reproduces byte-identical output.
@@ -72,17 +72,17 @@ variables — **dot-sourcing it really does change system settings**. For a shel
 
 ## Two shells: DSH plugin / Claude Code plugin
 
-`plugins/cn-persona/` is the JavaScript port of the same persona logic. Installed into a host, it is callable
+`plugins/iamchinese/` is the JavaScript port of the same persona logic. Installed into a host, it is callable
 from inside the session, and it packages up for handing to a friend.
 
 ```bash
-cd plugins/cn-persona
+cd plugins/iamchinese
 node --test                                      # 80 cases, no dependencies
 
 # install into DSH (dsh appends the package to the profile's bundle stack by itself)
 dsh plugin --profile web add D:\IamChinese\plugin
 # or from the packed tarball — this is the path a friend takes
-dsh plugin --profile web add .\dist\dsh-cn-persona-0.1.0.tgz
+dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz
 
 npm run dist                                     # tgz + zip + install.ps1 + 发给朋友.md + qr.png
 npm run share                                    # local distribution page; phone scans, downloads (port 8848)
@@ -90,9 +90,9 @@ npm run share                                    # local distribution page; phon
 
 Five tools show up after install: `cn_persona` (generate), `cn_persona_plan` (checklist),
 `cn_persona_apply` (write the three files), `cn_persona_check` (six checks + environment diff),
-`cn_persona_share` (export a share bundle), plus a `cn-persona` skill that explains the order to
+`cn_persona_share` (export a share bundle), plus a `iamchinese` skill that explains the order to
 use them in. On the Claude Code side, `.claude-plugin/plugin.json` is the manifest,
-`skills/cn-persona/SKILL.md` explains the order, `commands/` adds three slash commands
+`skills/iamchinese/SKILL.md` explains the order, `commands/` adds three slash commands
 (persona/apply/share), and the CLI is the same file.
 
 The QR codes are generated in this package (`scripts/lib/qr.js` — versions 1–6, byte mode, ECC
@@ -109,7 +109,7 @@ line). Decodability is checked against OpenCV's decoder by `scripts/verify-qr.py
 cases across six versions and two ECC levels, all decoded byte-identical; `--png <file>
 --expect <url>` verifies a single image.
 
-`plugins/cn-persona/README.md` covers install, uninstall, sharing and "what it does not do". The two
+`plugins/iamchinese/README.md` covers install, uninstall, sharing and "what it does not do". The two
 implementations **do not share seed semantics**: one seed gives different personas in the Python
 and JS versions. To line them up, pass the full profile instead.
 
@@ -117,15 +117,15 @@ and JS versions. To line them up, pass the full profile instead.
 
 | Path | Command |
 |---|---|
-| DSH plugin, from npm | `dsh plugin --profile web add dsh-cn-persona` |
-| DSH plugin, from the release asset | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/dsh-cn-persona-0.1.0.tgz` |
-| DSH plugin, from a local tarball | `dsh plugin --profile web add .\dist\dsh-cn-persona-0.1.0.tgz` |
-| Claude Code, this repo as a marketplace | `claude plugin marketplace add lirenjie95/IamChinese` then `claude plugin install cn-persona@iamchinese` |
-| Claude Code, inside a session | `/plugin marketplace add lirenjie95/IamChinese`, then `/plugin install cn-persona@iamchinese` |
-| Anything else | `plugins/cn-persona/dist/` — tarball, Claude zip, `install.ps1`, `发给朋友.md`, QR |
+| DSH plugin, from npm | `dsh plugin --profile web add iamchinese` |
+| DSH plugin, from the release asset | `dsh plugin --profile web add https://github.com/lirenjie95/IamChinese/releases/latest/download/iamchinese-0.2.0.tgz` |
+| DSH plugin, from a local tarball | `dsh plugin --profile web add .\dist\iamchinese-0.2.0.tgz` |
+| Claude Code, this repo as a marketplace | `claude plugin marketplace add lirenjie95/IamChinese` then `claude plugin install iamchinese@iamchinese` |
+| Claude Code, inside a session | `/plugin marketplace add lirenjie95/IamChinese`, then `/plugin install iamchinese@iamchinese` |
+| Anything else | `plugins/iamchinese/dist/` — tarball, Claude zip, `install.ps1`, `发给朋友.md`, QR |
 
 The marketplace manifest is `.claude-plugin/marketplace.json` at the repository root; it points
-at `./plugins/cn-persona`, which carries its own `.claude-plugin/plugin.json`. With the Claude CLI installed,
+at `./plugins/iamchinese`, which carries its own `.claude-plugin/plugin.json`. With the Claude CLI installed,
 `claude plugin validate .` re-checks both files.
 
 Listings for the two directories live in `marketplace/`: the entry YAML for [Awesome DSH Plugin]
@@ -240,7 +240,7 @@ Source-level assertions, not ordinary unit tests:
 | Suite | Count | Command |
 |---|---|---|
 | Python core | 137 | `python -m unittest discover -s tests -t .` |
-| JS plugin | 80 | `cd plugins/cn-persona && node --test` |
+| JS plugin | 80 | `cd plugins/iamchinese && node --test` |
 
 The JS suite includes four cases that call the host's real argument/schema validators, two that
 mount the plugin in a real cordis context, twelve covering the QR encoder, and seven driven
@@ -255,7 +255,7 @@ README.md                this file (English, GitHub default)
 README.zh-CN.md          Simplified Chinese version
 LICENSE                  MIT
 .claude-plugin/
-└── marketplace.json     Claude Code marketplace manifest (entry → ./plugins/cn-persona)
+└── marketplace.json     Claude Code marketplace manifest (entry → ./plugins/iamchinese)
 marketplace/
 ├── lirenjie95__IamChinese--plugin.yml  Awesome DSH Plugin entry (copy it to open the PR)
 ├── release-notes.md                    GitHub Release body
@@ -297,7 +297,7 @@ assets/                  finished logo files (no source image, no generator)
 > the npm package.
 
 plugins/                 JS ports; every subdirectory is an independently installable plugin
-└── cn-persona/          one DSH plugin and one Claude Code plugin, same logic
+└── iamchinese/          one DSH plugin and one Claude Code plugin, same logic
     ├── lib/core/        pure logic (persona, tables, PRNG, environment, profile), no IO
     ├── lib/             host wiring (index / mount / tools / skill / prompt)
     ├── bin/             CLI: persona / plan / apply / verify / share / undo
