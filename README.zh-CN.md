@@ -4,11 +4,13 @@
 
 [**English**](README.md) | **简体中文**
 
-[![tests](https://img.shields.io/badge/tests-137%20Python%20%C2%B7%2078%20JS-brightgreen)](#测试)
+[![tests](https://img.shields.io/badge/tests-137%20Python%20%C2%B7%2081%20JS-brightgreen)](#测试)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](#快速开始)
 [![node](https://img.shields.io/badge/node-%E2%89%A520-informational)](#两个外壳dsh-插件--claude-插件)
-[![npm](https://img.shields.io/badge/npm-dsh--cn--persona-cb3837)](https://www.npmjs.com/package/iamchinese)
+[![npm](https://img.shields.io/badge/npm-iamchinese-cb3837)](https://www.npmjs.com/package/iamchinese)
+
+> 仓库、产品名写 **IamChinese**；npm 包、命令、目录一律小写 iamchinese（npm 只收小写包名）。
 
 把 `regiongate` 的坐标轴整个翻过来：**默认用户是一个住在国内的普通人**——家宽或 4G 出口、
 `zh-Hans-CN`、`Asia/Shanghai`；北美与西欧反而落在服务范围之外。
@@ -16,7 +18,7 @@
 原来的版本默认用户在美国：Comcast 家宽、`America/Los_Angeles`、`en-US`，`CN` 挂在
 `restricted` 里，界面文案是"你的网络出口位于 CN，该地区不在服务支持范围内"。
 
-零第三方依赖，`unittest` 跑 137 个用例，断网可跑；`plugins/iamchinese/` 里另有一套零依赖的 JS 实现与 80 个用例，
+零第三方依赖，`unittest` 跑 137 个用例，断网可跑；`plugins/iamchinese/` 里另有一套零依赖的 JS 实现与 81 个用例，
 能装进 DSH 或 Claude Code 当插件用。
 
 装进 DSH / Claude 之后，**默认把你当成中国大陆用户**：会话里说简体中文，日期按
@@ -70,7 +72,7 @@ stdout/stderr 强制 UTF-8，若仍异常先 `chcp 65001`。
 
 ```bash
 cd plugins/iamchinese
-node --test                                      # 80 个用例，零依赖
+node --test                                      # 81 个用例，零依赖
 
 # 装进 DSH（装完 dsh 会把包自动挂进 profile 的层栈，不用手改配置）
 dsh plugin --profile web add D:\IamChinese\plugin
@@ -218,7 +220,7 @@ status / confidence / 可否申诉 / 下一步动作的唯一真源：
 | 套件 | 数量 | 命令 |
 ---|---|---|
 | Python 内核 | 137 | `python -m unittest discover -s tests -t .` |
-| JS 插件 | 80 | `cd plugins/iamchinese && node --test` |
+| JS 插件 | 81 | `cd plugins/iamchinese && node --test` |
 
 JS 那套里有 4 条直接调宿主的真参数/输出校验器，2 条在真 cordis 上下文里挂载插件，
 12 条覆盖二维码编码器，7 条走 CLI。
@@ -279,7 +281,7 @@ plugins/                 JS 版；每个子目录都是可独立安装的插件
     ├── commands/        Claude 侧三个 slash 命令
     ├── hooks/           Claude 侧 SessionStart hook（同一段身份说明）
     ├── .claude-plugin/  Claude 侧清单
-    ├── test/            80 个用例（宿主真校验器 4 + 真 cordis 挂载 2 + 二维码 12 + 分发页 7 + CLI 7）
+    ├── test/            81 个用例（宿主真校验器 4 + 真 cordis 挂载 2 + 二维码 12 + 分发页 7 + CLI 7）
     └── scripts/         打包、局域网分发页、二维码编码与验证
 ```
 

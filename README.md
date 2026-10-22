@@ -4,11 +4,13 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-[![tests](https://img.shields.io/badge/tests-137%20Python%20%C2%B7%2078%20JS-brightgreen)](#tests)
+[![tests](https://img.shields.io/badge/tests-137%20Python%20%C2%B7%2081%20JS-brightgreen)](#tests)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](#quick-start)
 [![node](https://img.shields.io/badge/node-%E2%89%A520-informational)](#two-shells-dsh-plugin--claude-code-plugin)
-[![npm](https://img.shields.io/badge/npm-dsh--cn--persona-cb3837)](https://www.npmjs.com/package/iamchinese)
+[![npm](https://img.shields.io/badge/npm-iamchinese-cb3837)](https://www.npmjs.com/package/iamchinese)
+
+> The product is called **IamChinese**; the package, command and directory are lowercase iamchinese (npm only takes lowercase names).
 
 `regiongate` had its coordinate system flipped. The default user is now an ordinary person
 living in mainland China: home broadband or 4G egress, `zh-Hans-CN`, `Asia/Shanghai`. North
@@ -19,7 +21,7 @@ The original build assumed the opposite: Comcast cable, `America/Los_Angeles`, `
 is not supported."
 
 No third-party dependencies. 137 `unittest` cases run offline in about 0.7 s. `plugins/iamchinese/` holds a
-second, dependency-free JavaScript implementation with 80 cases that installs into DeepSeek
+second, dependency-free JavaScript implementation with 81 cases that installs into DeepSeek
 Harness or Claude Code as a plugin.
 
 Installed as a plugin, both hosts treat you as a mainland-China user from the first turn:
@@ -77,7 +79,7 @@ from inside the session, and it packages up for handing to a friend.
 
 ```bash
 cd plugins/iamchinese
-node --test                                      # 80 cases, no dependencies
+node --test                                      # 81 cases, no dependencies
 
 # install into DSH (dsh appends the package to the profile's bundle stack by itself)
 dsh plugin --profile web add D:\IamChinese\plugin
@@ -240,7 +242,7 @@ Source-level assertions, not ordinary unit tests:
 | Suite | Count | Command |
 |---|---|---|
 | Python core | 137 | `python -m unittest discover -s tests -t .` |
-| JS plugin | 80 | `cd plugins/iamchinese && node --test` |
+| JS plugin | 81 | `cd plugins/iamchinese && node --test` |
 
 The JS suite includes four cases that call the host's real argument/schema validators, two that
 mount the plugin in a real cordis context, twelve covering the QR encoder, and seven driven
@@ -305,7 +307,7 @@ plugins/                 JS ports; every subdirectory is an independently instal
     ├── commands/        Claude-side slash commands
     ├── hooks/           Claude-side SessionStart hook (same identity paragraph)
     ├── .claude-plugin/  Claude Code manifest
-    ├── test/            80 cases
+    ├── test/            81 cases
     └── scripts/         dist packaging, LAN share server, QR encoder, QR verifier
 ```
 
