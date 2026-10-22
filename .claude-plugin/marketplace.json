@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "cn-persona",
-      "source": "./plugin",
+      "source": "./plugins/cn-persona",
       "displayName": "CN Persona",
       "description": "Treat the session as a mainland-China user (zh-Hans-CN, Asia/Shanghai, YYYY-MM-DD, ¥ CNY) and generate a self-consistent test persona: GB 11643 ID with a real check digit, phone prefix matched to carrier ASN, region code matched to address, locale matched to time zone.",
       "category": "i18n",

@@ -16,7 +16,7 @@
 原来的版本默认用户在美国：Comcast 家宽、`America/Los_Angeles`、`en-US`，`CN` 挂在
 `restricted` 里，界面文案是"你的网络出口位于 CN，该地区不在服务支持范围内"。
 
-零第三方依赖，`unittest` 跑 137 个用例，断网可跑；`plugin/` 里另有一套零依赖的 JS 实现与 78 个用例，
+零第三方依赖，`unittest` 跑 137 个用例，断网可跑；`plugins/cn-persona/` 里另有一套零依赖的 JS 实现与 80 个用例，
 能装进 DSH 或 Claude Code 当插件用。
 
 装进 DSH / Claude 之后，**默认把你当成中国大陆用户**：会话里说简体中文，日期按
@@ -66,11 +66,11 @@ stdout/stderr 强制 UTF-8，若仍异常先 `chcp 65001`。
 
 ## 两个外壳：DSH 插件 / Claude 插件
 
-`plugin/` 是同一套人设逻辑的 JS 版，装到宿主里就能**在会话中直接调用**，也能打包发给朋友。
+`plugins/cn-persona/` 是同一套人设逻辑的 JS 版，装到宿主里就能**在会话中直接调用**，也能打包发给朋友。
 
 ```bash
-cd plugin
-node --test                                      # 78 个用例，零依赖
+cd plugins/cn-persona
+node --test                                      # 80 个用例，零依赖
 
 # 装进 DSH（装完 dsh 会把包自动挂进 profile 的层栈，不用手改配置）
 dsh plugin --profile web add D:\IamChinese\plugin
@@ -106,9 +106,9 @@ Claude Code 用 `.claude-plugin/plugin.json` 认清单、`skills/cn-persona/SKIL
 | DSH 插件，走本地 tgz | `dsh plugin --profile web add .\dist\dsh-cn-persona-0.1.0.tgz` |
 | Claude Code，把本仓库当 marketplace | `claude plugin marketplace add lirenjie95/IamChinese`，再 `claude plugin install cn-persona@iamchinese` |
 | Claude Code，会话里 | `/plugin marketplace add lirenjie95/IamChinese`，再 `/plugin install cn-persona@iamchinese` |
-| 其他 | `plugin/dist/`：tgz、Claude zip、`install.ps1`、`发给朋友.md`、二维码 |
+| 其他 | `plugins/cn-persona/dist/`：tgz、Claude zip、`install.ps1`、`发给朋友.md`、二维码 |
 
-marketplace 清单在仓库根的 `.claude-plugin/marketplace.json`，条目指向 `./plugin`，那边另有
+marketplace 清单在仓库根的 `.claude-plugin/marketplace.json`，条目指向 `./plugins/cn-persona`，那边另有
 自己的 `.claude-plugin/plugin.json`。装了 Claude CLI 的话 `claude plugin validate .` 会把两份
 清单一起校验。
 
@@ -117,7 +117,7 @@ marketplace 清单在仓库根的 `.claude-plugin/marketplace.json`，条目指�
 `data/plugins/lirenjie95__IamChinese--plugin.yml`，一个文件就是全部投稿）、release notes 模板，
 以及提 PR 前要核对的几条规则。
 
-`plugin/README.md` 里有安装、卸载、分享和「它不做什么」的完整说明。两个版本**不共享 seed
+`plugins/cn-persona/README.md` 里有安装、卸载、分享和「它不做什么」的完整说明。两个版本**不共享 seed
 语义**：同一个种子在 Python 版和 JS 版结果不同，要跨版本对齐就传完整档案。
 
 ---
@@ -218,7 +218,7 @@ status / confidence / 可否申诉 / 下一步动作的唯一真源：
 | 套件 | 数量 | 命令 |
 ---|---|---|
 | Python 内核 | 137 | `python -m unittest discover -s tests -t .` |
-| JS 插件 | 78 | `cd plugin && node --test` |
+| JS 插件 | 80 | `cd plugins/cn-persona && node --test` |
 
 JS 那套里有 4 条直接调宿主的真参数/输出校验器，2 条在真 cordis 上下文里挂载插件，
 12 条覆盖二维码编码器，7 条走 CLI。
@@ -232,7 +232,7 @@ README.md                英文说明（GitHub 默认展示）
 README.zh-CN.md          简体中文说明
 LICENSE                  MIT
 .claude-plugin/
-└── marketplace.json     Claude Code marketplace 清单（条目指向 ./plugin）
+└── marketplace.json     Claude Code marketplace 清单（条目指向 ./plugins/cn-persona）
 marketplace/
 ├── lirenjie95__IamChinese--plugin.yml   Awesome DSH Plugin 的条目（原样复制去提 PR）
 ├── release-notes.md                     GitHub Release 正文
@@ -270,14 +270,17 @@ assets/                  打好的成品 logo（不含源图，也不含生成�
 > Settings → Social preview 传这张图。除此之外它能到的地方都自己带上了——README 头图、
 > 分发页头图与站点图标、Release 正文、npm 包里的 `assets/`。
 
-plugin/                  JS 版：DSH 插件 + Claude 插件，同一份逻辑两个外壳
-├── lib/core/            纯逻辑（人设、静态表、PRNG、环境、档案），无 IO
-├── lib/                 宿主装配（index / mount / tools / skill）
-├── bin/cn-persona.mjs   CLI：persona / plan / apply / verify / share / undo
-├── skills/cn-persona/   Claude 侧技能手册
-├── .claude-plugin/      Claude 侧清单
-├── test/                78 个用例（宿主真校验器 4 + 真 cordis 挂载 2 + 二维码 12 + CLI 7）
-└── scripts/dist.mjs     打「发给朋友」的包
+plugins/                 JS 版；每个子目录都是可独立安装的插件
+└── cn-persona/          DSH 插件 + Claude 插件，同一份逻辑两个外壳
+    ├── lib/core/        纯逻辑（人设、静态表、PRNG、环境、档案），无 IO
+    ├── lib/             宿主装配（index / mount / tools / skill / prompt）
+    ├── bin/             CLI：persona / plan / apply / verify / share / undo
+    ├── skills/          Claude 侧技能手册
+    ├── commands/        Claude 侧三个 slash 命令
+    ├── hooks/           Claude 侧 SessionStart hook（同一段身份说明）
+    ├── .claude-plugin/  Claude 侧清单
+    ├── test/            80 个用例（宿主真校验器 4 + 真 cordis 挂载 2 + 二维码 12 + 分发页 7 + CLI 7）
+    └── scripts/         打包、局域网分发页、二维码编码与验证
 ```
 
 ---

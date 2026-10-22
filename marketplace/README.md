@@ -13,7 +13,7 @@
    `data/plugins/lirenjie95__IamChinese--plugin.yml`。
 2. 给对方仓库提一个 PR，只加这一个文件。
 3. PR 前确认三件事：
-   - `plugin/package.json` 里有 `dsh.bundle.patch` —— 有（CI 第一道就查这个，只有 `dsh.client`
+   - `plugins/cn-persona/package.json` 里有 `dsh.bundle.patch` —— 有（CI 第一道就查这个，只有 `dsh.client`
      会被拒）。
    - 仓库创建满 1 天 —— CI 自动查。刚建好就提会被拦，隔天再提即可。
    - 仓库打了 `dsh-plugin` topic —— 见下面 gh 命令。
@@ -38,9 +38,9 @@ gh repo edit lirenjie95/IamChinese --add-topic dsh-plugin --add-topic claude-cod
 /plugin install cn-persona@iamchinese
 ```
 
-插件本体在 `plugin/`，清单在 `plugin/.claude-plugin/plugin.json`，skills 在
-`plugin/skills/cn-persona/`，slash 命令在 `plugin/commands/`，SessionStart hook 在
-`plugin/hooks/hooks.json`。不装市场也能单独用：`plugin/` 目录本身就是插件目录。
+插件本体在 `plugins/cn-persona/`，清单在 `plugins/cn-persona/.claude-plugin/plugin.json`，skills 在
+`plugins/cn-persona/skills/cn-persona/`，slash 命令在 `plugins/cn-persona/commands/`，SessionStart hook 在
+`plugins/cn-persona/hooks/hooks.json`。不装市场也能单独用：`plugins/cn-persona/` 目录本身就是插件目录。
 
 本地校验（需要本机有 `claude` 命令，这台机器上没有，装好再跑）：
 
@@ -53,14 +53,14 @@ claude plugin validate .
 `npm run dist` 产出的东西直接当 release 资产：
 
 ```powershell
-cd plugin
+cd plugins/cn-persona
 npm run dist
 cd ..
 gh release create v0.1.0 `
-  plugin/dist/dsh-cn-persona-0.1.0.tgz `
-  plugin/dist/cn-persona-claude.zip `
-  plugin/dist/install.ps1 `
-  plugin/dist/install.sh `
+  plugins/cn-persona/dist/dsh-cn-persona-0.1.0.tgz `
+  plugins/cn-persona/dist/cn-persona-claude.zip `
+  plugins/cn-persona/dist/install.ps1 `
+  plugins/cn-persona/dist/install.sh `
   --title "v0.1.0" --notes-file marketplace/release-notes.md
 ```
 
@@ -68,5 +68,5 @@ gh release create v0.1.0 `
 
 - 别在 yml 里手写 `npm:` 字段 —— 会被校验拒绝，npm 映射由他们从 registry 自动采集。
 - 描述里有 `: `（冒号加空格）必须加引号，否则 YAML 当成嵌套键。我们这份已经加了。
-- 截图想控制顺序就放 `plugin/screenshots.json`（1–8 张，相对路径不许出插件目录）；不声明也
+- 截图想控制顺序就放 `plugins/cn-persona/screenshots.json`（1–8 张，相对路径不许出插件目录）；不声明也
   可以，市场会从 README 里抽图。

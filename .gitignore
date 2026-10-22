@@ -12,7 +12,7 @@ diag/
 
 # JS 侧
 node_modules/
-plugin/dist/
+plugins/*/dist/
 .cn-persona/
 cn-persona-share/
 

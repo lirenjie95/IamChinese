@@ -18,8 +18,8 @@ The original build assumed the opposite: Comcast cable, `America/Los_Angeles`, `
 `CN` sitting in `restricted` and a screen that read "your network egress is in CN, this region
 is not supported."
 
-No third-party dependencies. 137 `unittest` cases run offline in about 0.7 s. `plugin/` holds a
-second, dependency-free JavaScript implementation with 78 cases that installs into DeepSeek
+No third-party dependencies. 137 `unittest` cases run offline in about 0.7 s. `plugins/cn-persona/` holds a
+second, dependency-free JavaScript implementation with 80 cases that installs into DeepSeek
 Harness or Claude Code as a plugin.
 
 Installed as a plugin, both hosts treat you as a mainland-China user from the first turn:
@@ -56,7 +56,7 @@ cd IamChinese
 python -m unittest discover -s tests -t .          # 137 cases, no network needed
 ```
 
-Or scan the QR code in `plugin/dist/qr.png` — it points at this repository (see
+Or scan the QR code in `plugins/cn-persona/dist/qr.png` — it points at this repository (see
 "Two shells" below for how that code is generated).
 
 `--seed` pins the persona (default `20261019`); the same seed reproduces byte-identical output.
@@ -72,12 +72,12 @@ variables — **dot-sourcing it really does change system settings**. For a shel
 
 ## Two shells: DSH plugin / Claude Code plugin
 
-`plugin/` is the JavaScript port of the same persona logic. Installed into a host, it is callable
+`plugins/cn-persona/` is the JavaScript port of the same persona logic. Installed into a host, it is callable
 from inside the session, and it packages up for handing to a friend.
 
 ```bash
-cd plugin
-node --test                                      # 78 cases, no dependencies
+cd plugins/cn-persona
+node --test                                      # 80 cases, no dependencies
 
 # install into DSH (dsh appends the package to the profile's bundle stack by itself)
 dsh plugin --profile web add D:\IamChinese\plugin
@@ -109,7 +109,7 @@ line). Decodability is checked against OpenCV's decoder by `scripts/verify-qr.py
 cases across six versions and two ECC levels, all decoded byte-identical; `--png <file>
 --expect <url>` verifies a single image.
 
-`plugin/README.md` covers install, uninstall, sharing and "what it does not do". The two
+`plugins/cn-persona/README.md` covers install, uninstall, sharing and "what it does not do". The two
 implementations **do not share seed semantics**: one seed gives different personas in the Python
 and JS versions. To line them up, pass the full profile instead.
 
@@ -122,10 +122,10 @@ and JS versions. To line them up, pass the full profile instead.
 | DSH plugin, from a local tarball | `dsh plugin --profile web add .\dist\dsh-cn-persona-0.1.0.tgz` |
 | Claude Code, this repo as a marketplace | `claude plugin marketplace add lirenjie95/IamChinese` then `claude plugin install cn-persona@iamchinese` |
 | Claude Code, inside a session | `/plugin marketplace add lirenjie95/IamChinese`, then `/plugin install cn-persona@iamchinese` |
-| Anything else | `plugin/dist/` — tarball, Claude zip, `install.ps1`, `发给朋友.md`, QR |
+| Anything else | `plugins/cn-persona/dist/` — tarball, Claude zip, `install.ps1`, `发给朋友.md`, QR |
 
 The marketplace manifest is `.claude-plugin/marketplace.json` at the repository root; it points
-at `./plugin`, which carries its own `.claude-plugin/plugin.json`. With the Claude CLI installed,
+at `./plugins/cn-persona`, which carries its own `.claude-plugin/plugin.json`. With the Claude CLI installed,
 `claude plugin validate .` re-checks both files.
 
 Listings for the two directories live in `marketplace/`: the entry YAML for [Awesome DSH Plugin]
@@ -240,7 +240,7 @@ Source-level assertions, not ordinary unit tests:
 | Suite | Count | Command |
 |---|---|---|
 | Python core | 137 | `python -m unittest discover -s tests -t .` |
-| JS plugin | 78 | `cd plugin && node --test` |
+| JS plugin | 80 | `cd plugins/cn-persona && node --test` |
 
 The JS suite includes four cases that call the host's real argument/schema validators, two that
 mount the plugin in a real cordis context, twelve covering the QR encoder, and seven driven
@@ -255,7 +255,7 @@ README.md                this file (English, GitHub default)
 README.zh-CN.md          Simplified Chinese version
 LICENSE                  MIT
 .claude-plugin/
-└── marketplace.json     Claude Code marketplace manifest (entry → ./plugin)
+└── marketplace.json     Claude Code marketplace manifest (entry → ./plugins/cn-persona)
 marketplace/
 ├── lirenjie95__IamChinese--plugin.yml  Awesome DSH Plugin entry (copy it to open the PR)
 ├── release-notes.md                    GitHub Release body
@@ -296,16 +296,17 @@ assets/                  finished logo files (no source image, no generator)
 > itself — README banner, share page header and favicon, release notes, and `assets/` inside
 > the npm package.
 
-plugin/                  JS port: one DSH plugin and one Claude Code plugin, same logic
-├── lib/core/            pure logic (persona, tables, PRNG, environment, profile), no IO
-├── lib/                 host wiring (index / mount / tools / skill / prompt)
-├── bin/cn-persona.mjs   CLI: persona / plan / apply / verify / share / undo
-├── skills/cn-persona/   Claude-side skill manual
-├── commands/            Claude-side slash commands
-├── hooks/               Claude-side SessionStart hook (same identity paragraph)
-├── .claude-plugin/      Claude Code manifest + marketplace manifest
-├── test/                78 cases
-└── scripts/             dist packaging, LAN share server, QR encoder, QR verifier
+plugins/                 JS ports; every subdirectory is an independently installable plugin
+└── cn-persona/          one DSH plugin and one Claude Code plugin, same logic
+    ├── lib/core/        pure logic (persona, tables, PRNG, environment, profile), no IO
+    ├── lib/             host wiring (index / mount / tools / skill / prompt)
+    ├── bin/             CLI: persona / plan / apply / verify / share / undo
+    ├── skills/          Claude-side skill manual
+    ├── commands/        Claude-side slash commands
+    ├── hooks/           Claude-side SessionStart hook (same identity paragraph)
+    ├── .claude-plugin/  Claude Code manifest
+    ├── test/            80 cases
+    └── scripts/         dist packaging, LAN share server, QR encoder, QR verifier
 ```
 
 ---

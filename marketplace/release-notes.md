@@ -30,7 +30,7 @@ Claude Code：
   `cn_persona_share`
 - 一个技能 `cn-persona`
 - 一个 CLI：`cn-persona persona|plan|apply|verify|share|undo`
-- Python 内核（地区判定、文案、诊断包）+ 137 个用例；JS 插件 78 个用例
+- Python 内核（地区判定、文案、诊断包）+ 137 个用例；JS 插件 80 个用例
 
 ## 它不做什么
 
